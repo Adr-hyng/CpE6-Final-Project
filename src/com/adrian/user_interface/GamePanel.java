@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import javax.swing.JPanel;
 
 import com.adrian.collisions.collisionHandler;
+import com.adrian.entity.Entity;
 import com.adrian.entity.Player;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.objects.Object;
@@ -61,11 +62,16 @@ public class GamePanel extends JPanel implements Runnable {
 	Sound music = new Sound();
 	Sound soundEffects = new Sound();
 	
-	// Player
-	public Player player = new Player(this, keyInput, new Vector2D(tileSize * 28, tileSize * 21));	
+	// NPC
+	public Entity npcs[] = new Entity[10];
 	
 	// Objects
 	public Object objects[] = new Object[10];
+	
+	// Player
+	public Player player = new Player(this, keyInput, new Vector2D(tileSize * 28, tileSize * 21));	
+	
+	
 	
 	// Game State (Use enums)
 	public int gameState;
@@ -82,6 +88,7 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	public void worldSetup() {
 		assetHandler.setObject();
+		assetHandler.setNPC();
 		playMusic(0);
 		gameState = playState;
 	}
@@ -120,6 +127,12 @@ public class GamePanel extends JPanel implements Runnable {
 	public void update() {
 		if(gameState == playState) {
 			player.update();
+			
+			for(int i = 0; i < npcs.length; i++) {
+				if(npcs[i] != null) {
+					npcs[i].update();
+				}
+			}
 		}
 		else if(gameState == pauseState) {
 			
@@ -135,12 +148,10 @@ public class GamePanel extends JPanel implements Runnable {
 		long drawStart = 0;
 		if(keyInput.checkDrawTime) drawStart = System.nanoTime();
 		
-		
-		
 		// Tiles
 		tileManager.draw(g2);
 		
-		// Objects
+		// Objects / NPC
 		assetHandler.draw(g2);
 		
 		// Player

@@ -2,6 +2,7 @@ package com.adrian.collisions;
 
 import java.awt.Rectangle;
 
+@SuppressWarnings("serial")
 public class CollisionRect extends Rectangle{
 	public int top, down, left, right;
 	

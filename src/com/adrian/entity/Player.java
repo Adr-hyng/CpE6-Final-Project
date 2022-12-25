@@ -3,12 +3,7 @@ package com.adrian.entity;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
-import com.adrian.GlobalTool;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.user_interface.GamePanel;
 import com.adrian.utils.Vector2D;
@@ -20,12 +15,12 @@ public class Player extends Entity {
 	
 	public final Vector2D screen;
 	
-	public int haveKeyCount = 0;
-	
 	public Player(GamePanel gp, KeyHandler keyInput, Vector2D position) {
+		super(gp);
 		this.screen = new Vector2D(
 				gp.screenWidth / 2 - (gp.tileSize), 
 				gp.screenHeight / 2 - (gp.tileSize));
+		
 		this.gp = gp;
 		this.keyInput = keyInput;
 		this.worldPosition = position;
@@ -38,9 +33,6 @@ public class Player extends Entity {
 	}
 	
 	private void plugController() {
-		double currentX = this.worldPosition.x;
-		double currentY = this.worldPosition.y;
-		
 		// Get Directional Boolean Movement
 		if(keyInput.upPressed) {
 			direction = "up";
@@ -58,90 +50,46 @@ public class Player extends Entity {
 			direction = "left";
 			isMoving = true;
 		}
-		
-		
-		
-		// Move Through Collision Detection using Improvised AABB 2D Collision
-		this.collisionOn = false;
-		gp.collisionHandler.collideTile(this);
-		int objectIndex = gp.collisionHandler.collideObject(this, true);
-		this.pickUpObject(objectIndex);
-		
-		if(! this.collisionOn && isMoving) {
-			switch(direction) {
-			case "up":
-				this.worldPosition.y -= this.movementSpeed;
-				break;
-			case "down":
-				this.worldPosition.y += this.movementSpeed;
-				break;
-			case "left":
-				this.worldPosition.x -= this.movementSpeed;
-				break;
-			case "right":
-				this.worldPosition.x += this.movementSpeed;
-				break;
-			}
-		}
-		
-		isMoving = false;
-		
-		// Sprite Animation
-		if( ((this.worldPosition.x - currentX) == 0) && ((this.worldPosition.y - currentY) == 0)) {
-			// Idle
-			spriteNum = 1;
-		} else {
-			// Moving
-			spriteCounter++;
-			if(spriteCounter > 10) {
-				if(spriteNum == 1) {
-					spriteNum = 2;
-				}
-				else if(spriteNum == 2) {
-					spriteNum = 1;
-				}
-				spriteCounter = 0;
-			}
+		else if(!keyInput.upPressed &&
+				!keyInput.downPressed &&
+				!keyInput.leftPressed &&
+				!keyInput.rightPressed) {
+			isMoving = false;
 		}
 	}
 	
+	@Override
+	protected void startMove() {
+		plugController();
+		int objectIndex = gp.collisionHandler.collideObject(this, true);
+		int npcIndex = gp.collisionHandler.collideEntity(this, gp.npcs);
+		interactNPC(npcIndex);
+	}
+	
 	public void pickUpObject(int index) {
-		// Just check if it's in the index of the array objects, then it will be deleted.
 		if(index == 999) return;
 		String objectName = gp.objects[index].name;
 		
 		switch(objectName) {
 		case "Key":
-			gp.playSoundEffect(1);
-			haveKeyCount++;
-			gp.objects[index] = null;
-			gp.ui.showMessage("You got a key!");
 			break;
 		case "Door":
-			if(haveKeyCount > 0) {
-				gp.playSoundEffect(3);
-				gp.objects[index] = null;
-				haveKeyCount--;
-				gp.ui.showMessage("Door unlocked");
-			}
-			else {
-				gp.ui.showMessage("You don't have enough key!");
-			}
 			break;
 		case "Boots":
-			gp.playSoundEffect(2);
-			this.movementSpeed += 2;
-			gp.objects[index] = null;
 			break;
 		case "Chest":
-			gp.ui.gameFinished = true;
-			gp.stopMusic();
-			gp.playSoundEffect(4);
 			break;
 		}
 	}
 	
-	public void getSprite() {
+	public void interactNPC(int index) {
+		if(index == 999) return;
+			// Nothing
+		System.out.println(gp.npcs[index].direction);
+	}
+	
+	@Override
+	protected void getSprite() {
 		up1 = loadSprite("player\\boy_up_1.png");
 		up2 = loadSprite("player\\boy_up_2.png");
 		down1 = loadSprite("player\\boy_down_1.png");
@@ -150,21 +98,6 @@ public class Player extends Entity {
 		right2 = loadSprite("player\\boy_right_2.png");
 		left1 = loadSprite("player\\boy_left_1.png");
 		left2 = loadSprite("player\\boy_left_2.png");
-	}
-	
-	private BufferedImage loadSprite(final String imagePath) {
-		BufferedImage image = null;
-		try {
-			image = ImageIO.read(new File(GlobalTool.assetsDirectory + imagePath));
-			image = GlobalTool.utilityTool.scaleImage(image, gp.tileSize, gp.tileSize);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return image;
-	}
-	
-	public void update() {
-		plugController();
 	}
 	
 	public void draw(Graphics2D g) {

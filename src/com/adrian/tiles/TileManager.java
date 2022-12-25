@@ -51,7 +51,6 @@ public class TileManager {
 	}
 	
 	public void loadMap() {
-		// Import Map through Text file.
 		try {
 			BufferedReader fileReader = new BufferedReader(new FileReader(GlobalTool.assetsDirectory + "maps\\" + this.mapName + ".txt"));
 			int col = 0;
@@ -98,7 +97,6 @@ public class TileManager {
 	}
 	
 	public void getSprite() {
-		// Load using For Loop with a text file as Database.
 		for(int i = 0; i < tilesPath.size(); i++) {
 			String imagePath;
 			boolean isSolid;
