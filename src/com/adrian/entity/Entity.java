@@ -30,6 +30,8 @@ public abstract class Entity {
 	public int actionLockCounter = 0;
 	public int moveLockCounter = 0;
 	public BufferedImage image;
+	String dialogues[] = new String[20];
+	int dialogueIndex = 0; 
 	
 	public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 	public int solidAreaDefaultX, solidAreaDefaultY;
@@ -50,6 +52,27 @@ public abstract class Entity {
 			e.printStackTrace();
 		}
 		return image;
+	}
+	
+	public void speak() {
+		if(dialogues[dialogueIndex] == null) dialogueIndex = 0;
+		gp.ui.currentDialogue = dialogues[dialogueIndex];
+		dialogueIndex++;
+		
+		switch(gp.player.direction) {
+		case "up":
+			direction = "down";
+			break;
+		case "down":
+			direction = "up";
+			break;
+		case "left":
+			direction = "right";
+			break;
+		case "right":
+			direction = "left";
+			break;
+		}
 	}
 	
 	protected void startMove() {}

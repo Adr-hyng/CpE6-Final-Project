@@ -11,6 +11,7 @@ import com.adrian.collisions.collisionHandler;
 import com.adrian.entity.Entity;
 import com.adrian.entity.Player;
 import com.adrian.inputs.KeyHandler;
+import com.adrian.inputs.MouseHandler;
 import com.adrian.objects.Object;
 import com.adrian.sounds.Sound;
 import com.adrian.tiles.TileManager;
@@ -43,11 +44,12 @@ public class GamePanel extends JPanel implements Runnable {
 	// Tile Manager
 	public TileManager tileManager = new TileManager(this);
 	
-	// Key Input Handler
+	// Input Handler
 	KeyHandler keyInput = new KeyHandler(this);
+	MouseHandler mouseInput = new MouseHandler();
 	
 	// Game Loop
-	Thread gameThread;
+	public Thread gameThread;
 	
 	// Collision Handler
 	public collisionHandler collisionHandler = new collisionHandler(this);
@@ -75,8 +77,10 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	// Game State (Use enums)
 	public int gameState;
-	public final int playState = 1;
-	public final int pauseState = 2;
+//	public final int titleState = 0;
+//	public final int playState = 1;
+//	public final int pauseState = 2;
+//	public final int dialogState = 3;
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth + (tileSize / 2) - (originalTileSize / 2), screenHeight + tileSize - (originalTileSize / 2)));
@@ -89,8 +93,7 @@ public class GamePanel extends JPanel implements Runnable {
 	public void worldSetup() {
 		assetHandler.setObject();
 		assetHandler.setNPC();
-		playMusic(0);
-		gameState = playState;
+		gameState = GameState.Menu.state;
 	}
 	
 	public void startGameThread() {
@@ -125,7 +128,11 @@ public class GamePanel extends JPanel implements Runnable {
 	}
 	
 	public void update() {
-		if(gameState == playState) {
+		if (gameState == GameState.Menu.state) {
+			
+		}
+		
+		else if(gameState == GameState.Play.state) {
 			player.update();
 			
 			for(int i = 0; i < npcs.length; i++) {
@@ -134,8 +141,14 @@ public class GamePanel extends JPanel implements Runnable {
 				}
 			}
 		}
-		else if(gameState == pauseState) {
-			
+		else if(gameState == GameState.Pause.state) {
+
+		}
+		
+		else if(gameState == GameState.Dialogue.state) {
+			if(keyInput.haveKeyPressed.get("ESC")) {
+				gameState = GameState.Play.state;
+			}
 		}
 	}
 	
@@ -148,17 +161,28 @@ public class GamePanel extends JPanel implements Runnable {
 		long drawStart = 0;
 		if(keyInput.checkDrawTime) drawStart = System.nanoTime();
 		
-		// Tiles
-		tileManager.draw(g2);
+		if(gameState == GameState.Menu.state) {
+			// UI
+			ui.draw(g2);
+		}
 		
-		// Objects / NPC
-		assetHandler.draw(g2);
+		else {
+			
+			// Tiles
+			tileManager.draw(g2);
+			
+			// Objects / NPC
+			assetHandler.draw(g2);
+			
+			// Player
+			player.draw(g2);
+			
+			// UI
+			ui.draw(g2);
+			
+		}
 		
-		// Player
-		player.draw(g2);
 		
-		// UI
-		ui.draw(g2);
 		
 		// !!DEBUG: Time Complexity (0.003, 0.0017)
 		if(keyInput.checkDrawTime) {

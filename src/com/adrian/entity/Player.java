@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 
 import com.adrian.inputs.KeyHandler;
 import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interface.GameState;
 import com.adrian.utils.Vector2D;
 
 public class Player extends Entity {
@@ -33,27 +34,26 @@ public class Player extends Entity {
 	}
 	
 	private void plugController() {
-		// Get Directional Boolean Movement
-		if(keyInput.upPressed) {
+		if(keyInput.haveKeyPressed.get("W")) {
 			direction = "up";
 			isMoving = true;
 		}
-		else if(keyInput.downPressed) {
+		else if(keyInput.haveKeyPressed.get("S")) {
 			direction = "down";
 			isMoving = true;
 		}
-		else if(keyInput.rightPressed) {
+		else if(keyInput.haveKeyPressed.get("D")) {
 			direction = "right";
 			isMoving = true;
 		}
-		else if(keyInput.leftPressed) {
+		else if(keyInput.haveKeyPressed.get("A")) {
 			direction = "left";
 			isMoving = true;
 		}
-		else if(!keyInput.upPressed &&
-				!keyInput.downPressed &&
-				!keyInput.leftPressed &&
-				!keyInput.rightPressed) {
+		else if(!keyInput.haveKeyPressed.get("W") &&
+				!keyInput.haveKeyPressed.get("S") &&
+				!keyInput.haveKeyPressed.get("A") &&
+				!keyInput.haveKeyPressed.get("D")) {
 			isMoving = false;
 		}
 	}
@@ -64,6 +64,7 @@ public class Player extends Entity {
 		int objectIndex = gp.collisionHandler.collideObject(this, true);
 		int npcIndex = gp.collisionHandler.collideEntity(this, gp.npcs);
 		interactNPC(npcIndex);
+		return;
 	}
 	
 	public void pickUpObject(int index) {
@@ -83,9 +84,15 @@ public class Player extends Entity {
 	}
 	
 	public void interactNPC(int index) {
-		if(index == 999) return;
-			// Nothing
-		System.out.println(gp.npcs[index].direction);
+		if(index == 999) {
+			return;
+		};
+		if(index != 999 && (keyInput.haveKeyPressed.get("G")) ) {
+			gp.gameState = GameState.Dialogue.state;
+			gp.npcs[index].speak();
+		}
+		keyInput.haveKeyPressed.replace("G", false);
+		
 	}
 	
 	@Override
