@@ -42,7 +42,6 @@ public class NPC extends Entity{
 	
 	protected void startMove() {
 		actionLockCounter++;
-//		gp.collisionHandler.collidePlayer(this);
 		if(actionLockCounter > 120) {
 			Random random = new Random();
 			int i = random.nextInt(125) + 1; // Range 1-100

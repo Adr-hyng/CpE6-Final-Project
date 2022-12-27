@@ -3,12 +3,12 @@ package com.adrian.collisions;
 import com.adrian.entity.Entity;
 import com.adrian.user_interface.GamePanel;
 
-public class collisionHandler {
+public class CollisionHandler {
 	GamePanel gp;
 	CollisionRect entityWorld;
 	CollisionRect entityDirection;
 	
-	public collisionHandler(GamePanel gp) {
+	public CollisionHandler(GamePanel gp) {
 		this.gp = gp;
 	}
 	
@@ -139,6 +139,7 @@ public class collisionHandler {
 		
 		for(int i = 0; i < target.length; i++) {
 			if(target[i] == null) continue;
+			if(target[i].hashCode() == entity.hashCode()) continue;
 			// Get entity's solid area position
 			entity.solidArea.x = (int) (entity.worldPosition.x + entity.solidArea.x);
 			entity.solidArea.y = (int) (entity.worldPosition.y + entity.solidArea.y);

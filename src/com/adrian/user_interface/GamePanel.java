@@ -4,15 +4,19 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import javax.swing.JPanel;
 
-import com.adrian.collisions.collisionHandler;
+import com.adrian.collisions.CollisionHandler;
 import com.adrian.entity.Entity;
 import com.adrian.entity.Player;
+import com.adrian.events.EventHandler;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.inputs.MouseHandler;
-import com.adrian.objects.Object;
 import com.adrian.sounds.Sound;
 import com.adrian.tiles.TileManager;
 import com.adrian.utils.AssetSetter;
@@ -41,21 +45,25 @@ public class GamePanel extends JPanel implements Runnable {
 	// Frame per second
 	final int FPS = 60;
 	
+	public DatabaseManager db = new DatabaseManager();
+	
 	// Tile Manager
 	public TileManager tileManager = new TileManager(this);
 	
 	// Input Handler
-	KeyHandler keyInput = new KeyHandler(this);
+	public KeyHandler keyInput = new KeyHandler(this);
 	MouseHandler mouseInput = new MouseHandler();
 	
 	// Game Loop
 	public Thread gameThread;
 	
 	// Collision Handler
-	public collisionHandler collisionHandler = new collisionHandler(this);
+	public CollisionHandler collisionHandler = new CollisionHandler(this);
 	
 	// Asset Handler
 	public AssetSetter assetHandler = new AssetSetter(this);
+	
+	public EventHandler eventHandler = new EventHandler(this);
 	
 	// User Interface (UI)
 	public UserInterface ui = new UserInterface(this);
@@ -68,19 +76,15 @@ public class GamePanel extends JPanel implements Runnable {
 	public Entity npcs[] = new Entity[10];
 	
 	// Objects
-	public Object objects[] = new Object[10];
+	public Entity objects[] = new Entity[10];
+	
+	// Entity List
+	public ArrayList<Entity> entityList = new ArrayList<>();
 	
 	// Player
 	public Player player = new Player(this, keyInput, new Vector2D(tileSize * 28, tileSize * 21));	
 	
-	
-	
-	// Game State (Use enums)
 	public int gameState;
-//	public final int titleState = 0;
-//	public final int playState = 1;
-//	public final int pauseState = 2;
-//	public final int dialogState = 3;
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth + (tileSize / 2) - (originalTileSize / 2), screenHeight + tileSize - (originalTileSize / 2)));
@@ -90,7 +94,60 @@ public class GamePanel extends JPanel implements Runnable {
 		this.setFocusable(true);
 	}
 	
+	// <---- START OF DATABASE CONNECTION ---->
+	public void connectDB() throws SQLException {
+		db.createConnection("sys");
+		String tableName = "entity";
+		String schemaName = "GameDB";
+		if(! (db.checkDB(schemaName)) ) {
+			db.createDatabase(schemaName);
+			db.createConnection(schemaName);
+			db.createTable(tableName, "hp INT(64), "
+					+ "x INT(64),"
+					+ "type VARCHAR(255),"
+					+ "y INT(64)");
+			db.addDB(new String[] {"0", "0", "0", "Player"}, "entity", "hp, x, y, type");
+		}
+		else {
+			db.createConnection(schemaName);
+		}
+	}
+	
+	public void processDB(Entity entity, int index) throws NumberFormatException, SQLException {
+		int dbX = Integer.parseInt((String) db.readDB("x", "entity", "idNo = " + index + ";").get(0));
+		int dbY = Integer.parseInt((String) db.readDB("y", "entity", "idNo = "+ index +";").get(0));
+		
+		if(dbX == 0 && dbY == 0) {
+			System.out.println("New Game");
+			db.updateDB((int) entity.worldPosition.x, "entity", "x", index);
+			db.updateDB((int) entity.worldPosition.y, "entity", "y", index);
+			db.updateDB((int) entity.currentLife, "entity", "hp", index);
+		} else {
+			entity.worldPosition.x = Integer.parseInt((String) db.readDB("x", "entity", "idNo = " + index + ";").get(0));
+			entity.worldPosition.y = Integer.parseInt((String) db.readDB("y", "entity", "idNo = " + index + ";").get(0));
+			entity.currentLife = Integer.parseInt((String) db.readDB("hp", "entity", "idNo = " + index + ";").get(0));
+		}
+	}
+	
+	public void updateDB(Entity entity) {
+		try {
+			db.updateDB((int) entity.worldPosition.x, "entity", "x", 1);
+			db.updateDB((int) entity.worldPosition.y, "entity", "y", 1);
+			db.updateDB((int) entity.currentLife, "entity", "hp", 1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// <---- END OF DATABASE CONNECTION ---->
+	
 	public void worldSetup() {
+		try {
+			this.connectDB();
+			this.processDB(player, 1);
+		} catch (SQLException | NumberFormatException e) {
+			e.printStackTrace();
+		}
 		assetHandler.setObject();
 		assetHandler.setNPC();
 		gameState = GameState.Menu.state;
@@ -134,10 +191,14 @@ public class GamePanel extends JPanel implements Runnable {
 		
 		else if(gameState == GameState.Play.state) {
 			player.update();
-			
 			for(int i = 0; i < npcs.length; i++) {
 				if(npcs[i] != null) {
 					npcs[i].update();
+				}
+			}
+			for(int i = 0; i < objects.length; i++) {
+				if(objects[i] != null) {
+					objects[i].update();
 				}
 			}
 		}
@@ -157,39 +218,35 @@ public class GamePanel extends JPanel implements Runnable {
 		
 		Graphics2D g2 = (Graphics2D) g;
 		
-		// !!DEBUG: Time Complexity
-		long drawStart = 0;
-		if(keyInput.checkDrawTime) drawStart = System.nanoTime();
-		
 		if(gameState == GameState.Menu.state) {
 			// UI
 			ui.draw(g2);
 		}
 		
 		else {
-			
 			// Tiles
 			tileManager.draw(g2);
 			
-			// Objects / NPC
-			assetHandler.draw(g2);
+			// Objects / NPC / Player
+			entityList.add(player);
+			assetHandler.compressEntities();
 			
-			// Player
-			player.draw(g2);
+			Collections.sort(entityList, new Comparator<Entity>() {
+
+				@Override
+				public int compare(Entity e1, Entity e2) {
+					int result = Integer.compare((int) e1.worldPosition.y, (int) e2.worldPosition.y);
+					return result;
+				}
+				
+			});
+			
+			assetHandler.draw(g2);
+			assetHandler.clearEntities();
 			
 			// UI
 			ui.draw(g2);
 			
-		}
-		
-		
-		
-		// !!DEBUG: Time Complexity (0.003, 0.0017)
-		if(keyInput.checkDrawTime) {
-			long drawEnd = System.nanoTime();
-			long timePassed = drawEnd - drawStart;
-			g2.setColor(Color.white);
-			g2.drawString("Draw Time: " + timePassed, 10, 40);
 		}
 		
 		g2.dispose();

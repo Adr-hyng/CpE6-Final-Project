@@ -19,19 +19,26 @@ public abstract class Entity {
 	public GamePanel gp;
 	
 	public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-	public String direction;
+	public String direction = "down";
 	
 	public double movementSpeed;
 	public boolean isMoving = false;
 	public Vector2D worldPosition;
+	public BufferedImage image;
+	public String name;
+	public boolean collision = false;
 	
 	public int spriteCounter = 0;
 	public int spriteNum = 1;
 	public int actionLockCounter = 0;
 	public int moveLockCounter = 0;
-	public BufferedImage image;
+	
 	String dialogues[] = new String[20];
 	int dialogueIndex = 0; 
+	
+	// Character Status
+	public int maxLife;
+	public int currentLife = 0;
 	
 	public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 	public int solidAreaDefaultX, solidAreaDefaultY;
@@ -58,7 +65,6 @@ public abstract class Entity {
 		if(dialogues[dialogueIndex] == null) dialogueIndex = 0;
 		gp.ui.currentDialogue = dialogues[dialogueIndex];
 		dialogueIndex++;
-		
 		switch(gp.player.direction) {
 		case "up":
 			direction = "down";
@@ -85,6 +91,7 @@ public abstract class Entity {
 		if(!walkthroughWalls) gp.collisionHandler.collideTile(this);
 		if(!(this instanceof Player)) {
 			gp.collisionHandler.collidePlayer(this);
+			gp.collisionHandler.collideEntity(this, gp.npcs);
 			gp.collisionHandler.collideObject(this, false);
 		}
 		if(!this.collisionOn && isMoving) {
@@ -123,7 +130,6 @@ public abstract class Entity {
 	
 	public void draw(Graphics2D g2) {
 		Vector2D screenView = new Vector2D(worldPosition.x - gp.player.worldPosition.x + gp.player.screen.x, worldPosition.y - gp.player.worldPosition.y + gp.player.screen.y);
-		BufferedImage image = null;
 		// To remove black spots when chunk loading.
 		final int screenOffset = 2;
 		

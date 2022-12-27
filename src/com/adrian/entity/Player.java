@@ -24,9 +24,14 @@ public class Player extends Entity {
 		
 		this.gp = gp;
 		this.keyInput = keyInput;
+		
+		// Default Values
 		this.worldPosition = position;
 		this.movementSpeed = 4;
+		this.maxLife = 6;
+		this.currentLife = maxLife;
 		this.direction = "down";
+		
 		this.solidArea = new Rectangle(8, 16, 28, 28); // IMPROVEMENT: Use percentage to calculate the rect for responsiveness.
 		solidAreaDefaultX = this.solidArea.x;
 		solidAreaDefaultY = this.solidArea.y;
@@ -63,6 +68,7 @@ public class Player extends Entity {
 		plugController();
 		int objectIndex = gp.collisionHandler.collideObject(this, true);
 		int npcIndex = gp.collisionHandler.collideEntity(this, gp.npcs);
+		gp.eventHandler.checkEvent();
 		interactNPC(npcIndex);
 		return;
 	}
@@ -87,11 +93,11 @@ public class Player extends Entity {
 		if(index == 999) {
 			return;
 		};
-		if(index != 999 && (keyInput.haveKeyPressed.get("G")) ) {
+		if(index != 999 && (keyInput.haveKeyPressed.get("ENTER")) ) {
 			gp.gameState = GameState.Dialogue.state;
 			gp.npcs[index].speak();
 		}
-		keyInput.haveKeyPressed.replace("G", false);
+		keyInput.haveKeyPressed.replace("ENTER", false);
 		
 	}
 	

@@ -7,7 +7,7 @@ false
 grass01.png
 false
 hut.png
-false
+true
 road00.png
 false
 road01.png

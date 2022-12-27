@@ -19,10 +19,10 @@ public class KeyHandler implements KeyListener{
 		put("A", false);
 		put("S", false);
 		put("D", false);
-		put("G", false);
+		put("ENTER", false);
+		put("T", false); // Test
 		put("ESC", false);
 	}};
-	public boolean checkDrawTime = false;
 	
 	public KeyHandler(GamePanel gp) {
 		this.gp = gp;
@@ -104,8 +104,8 @@ public class KeyHandler implements KeyListener{
 				haveKeyPressed.replace("D", true);
 			}
 			
-			if(code == KeyEvent.VK_G) {
-				haveKeyPressed.replace("G", true);
+			if(code == KeyEvent.VK_ENTER) {
+				haveKeyPressed.replace("ENTER", true);
 			}
 			
 			if(code == KeyEvent.VK_P) {
@@ -114,11 +114,7 @@ public class KeyHandler implements KeyListener{
 			
 			// DEBUG
 			if(code == KeyEvent.VK_T) {
-				if(checkDrawTime) {
-					checkDrawTime = false;
-					return;
-				}
-				checkDrawTime = true;
+				haveKeyPressed.replace("T", true);
 			}
 		}
 		
@@ -131,6 +127,7 @@ public class KeyHandler implements KeyListener{
 		else if (gp.gameState == GameState.Dialogue.state) {
 			if(code == KeyEvent.VK_ESCAPE) {
 				haveKeyPressed.replace("ESC", true);
+				gp.ui.dialogueOffset.y = 0;
 			}
 		}
 	}
@@ -152,13 +149,16 @@ public class KeyHandler implements KeyListener{
 			haveKeyPressed.replace("D", false);
 		}
 		
-		if(code == KeyEvent.VK_G) {
-			haveKeyPressed.replace("G", false);
+		if(code == KeyEvent.VK_ENTER) {
+			haveKeyPressed.replace("ENTER", false);
 		}
 		
 		if(code == KeyEvent.VK_ESCAPE) {
 			haveKeyPressed.replace("ESC", false);
 		}
+		
+		if(code == KeyEvent.VK_T) {
+			haveKeyPressed.replace("T", false);
+		}
 	}
-	
 }

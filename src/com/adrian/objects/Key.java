@@ -1,21 +1,18 @@
 package com.adrian.objects;
 
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-
-import com.adrian.GlobalTool;
+import com.adrian.entity.Entity;
 import com.adrian.user_interface.GamePanel;
 
-public class Key extends com.adrian.objects.Object {
+public class Key extends Entity {
 	public Key(GamePanel gp) {
 		super(gp);
 		this.name = "Key";
-		try {
-			image = ImageIO.read(new File(GlobalTool.assetsDirectory + "objects\\key.png"));
-			image = GlobalTool.utilityTool.scaleImage(image, gp.tileSize, gp.tileSize);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		this.getSprite();
+	}
+
+	@Override
+	protected void getSprite() {
+		// TODO Auto-generated method stub
+		image = loadSprite("objects\\key.png");
 	}
 }
