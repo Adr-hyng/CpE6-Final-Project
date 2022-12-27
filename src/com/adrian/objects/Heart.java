@@ -20,4 +20,10 @@ public class Heart extends Entity {
 		halfHeartImage = this.loadSprite("objects\\heart_half.png");
 		image = this.loadSprite("objects\\heart_full.png");
 	}
+
+	@Override
+	public void trigger() {
+		// TODO Auto-generated method stub
+		
+	}
 }

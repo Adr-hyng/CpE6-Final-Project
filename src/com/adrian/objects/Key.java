@@ -15,4 +15,10 @@ public class Key extends Entity {
 		// TODO Auto-generated method stub
 		image = loadSprite("objects\\key.png");
 	}
+
+	@Override
+	public void trigger() {
+		// TODO Auto-generated method stub
+		
+	}
 }

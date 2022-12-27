@@ -68,38 +68,57 @@ public class Player extends Entity {
 		plugController();
 		int objectIndex = gp.collisionHandler.collideObject(this, true);
 		int npcIndex = gp.collisionHandler.collideEntity(this, gp.npcs);
+		int obstacleIndex = gp.collisionHandler.collideEntity(this, gp.obstacles);
 		gp.eventHandler.checkEvent();
-		interactNPC(npcIndex);
+		pickUpObject(objectIndex);
+		interactObstacle(obstacleIndex);
 		return;
 	}
 	
 	public void pickUpObject(int index) {
 		if(index == 999) return;
-		String objectName = gp.objects[index].name;
-		
-		switch(objectName) {
+		// Should
+		int findIndex = gp.itemObjects[index].getClass().getName().lastIndexOf(".") + 1;
+		String objectCode = gp.itemObjects[index].getClass().getName();
+		objectCode = objectCode.substring(findIndex, objectCode.length() - 1);
+		switch(objectCode) {
 		case "Key":
 			break;
 		case "Door":
 			break;
-		case "Boots":
+		case "Boot":
+			System.out.println("Boots");
+			gp.itemObjects[index] = null;
 			break;
 		case "Chest":
 			break;
 		}
 	}
 	
-	public void interactNPC(int index) {
+	public void interactEntity(int index) {
 		if(index == 999) {
 			return;
 		};
-		if(index != 999 && (keyInput.haveKeyPressed.get("ENTER")) ) {
+		if(index != 999  && (keyInput.haveKeyPressed.get("ENTER"))) {
 			gp.gameState = GameState.Dialogue.state;
-			gp.npcs[index].speak();
+			gp.npcs[index].trigger();
+		}
+		keyInput.haveKeyPressed.replace("ENTER", false);	
+	}
+	
+	public void interactObstacle(int index) {
+		if(index == 999) {
+			return;
+		};
+		if(index != 999  && (keyInput.haveKeyPressed.get("ENTER"))) {
+			gp.gameState = GameState.Dialogue.state;
+			gp.obstacles[index].trigger();
+			gp.npcs[index] = null;
 		}
 		keyInput.haveKeyPressed.replace("ENTER", false);
 		
 	}
+	
 	
 	@Override
 	protected void getSprite() {
@@ -151,5 +170,11 @@ public class Player extends Entity {
 				break;
 		}
 		g.drawImage(image, (int) screen.x, (int) screen.y, null);
+	}
+
+	@Override
+	public void trigger() {
+		// TODO Auto-generated method stub
+		
 	}
 }

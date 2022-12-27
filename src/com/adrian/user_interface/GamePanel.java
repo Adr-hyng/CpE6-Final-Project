@@ -17,6 +17,7 @@ import com.adrian.entity.Player;
 import com.adrian.events.EventHandler;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.inputs.MouseHandler;
+import com.adrian.objects.ItemObject;
 import com.adrian.sounds.Sound;
 import com.adrian.tiles.TileManager;
 import com.adrian.utils.AssetSetter;
@@ -75,8 +76,11 @@ public class GamePanel extends JPanel implements Runnable {
 	// NPC
 	public Entity npcs[] = new Entity[10];
 	
-	// Objects
-	public Entity objects[] = new Entity[10];
+	// Obstacles
+	public Entity obstacles[] = new Entity[10];
+	
+	// Item Objects
+	public ItemObject itemObjects[] = new ItemObject[10];
 	
 	// Entity List
 	public ArrayList<Entity> entityList = new ArrayList<>();
@@ -148,7 +152,8 @@ public class GamePanel extends JPanel implements Runnable {
 		} catch (SQLException | NumberFormatException e) {
 			e.printStackTrace();
 		}
-		assetHandler.setObject();
+		assetHandler.setItemObject();
+		assetHandler.setObstacle();
 		assetHandler.setNPC();
 		gameState = GameState.Menu.state;
 	}
@@ -167,7 +172,6 @@ public class GamePanel extends JPanel implements Runnable {
 		long currentTime;
 		
 		while(gameThread != null) {
-			
 			// DeltaTime frame rendering
 			currentTime = System.nanoTime();
 			
@@ -196,9 +200,9 @@ public class GamePanel extends JPanel implements Runnable {
 					npcs[i].update();
 				}
 			}
-			for(int i = 0; i < objects.length; i++) {
-				if(objects[i] != null) {
-					objects[i].update();
+			for(int i = 0; i < obstacles.length; i++) {
+				if(obstacles[i] != null) {
+					obstacles[i].update();
 				}
 			}
 		}

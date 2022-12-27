@@ -33,7 +33,7 @@ public abstract class Entity {
 	public int actionLockCounter = 0;
 	public int moveLockCounter = 0;
 	
-	String dialogues[] = new String[20];
+	protected String dialogues[] = new String[20];
 	int dialogueIndex = 0; 
 	
 	// Character Status
@@ -61,25 +61,7 @@ public abstract class Entity {
 		return image;
 	}
 	
-	public void speak() {
-		if(dialogues[dialogueIndex] == null) dialogueIndex = 0;
-		gp.ui.currentDialogue = dialogues[dialogueIndex];
-		dialogueIndex++;
-		switch(gp.player.direction) {
-		case "up":
-			direction = "down";
-			break;
-		case "down":
-			direction = "up";
-			break;
-		case "left":
-			direction = "right";
-			break;
-		case "right":
-			direction = "left";
-			break;
-		}
-	}
+	public abstract void trigger();
 	
 	protected void startMove() {}
 	
@@ -170,6 +152,9 @@ public abstract class Entity {
 					if (spriteNum == 2) {
 						image = left2;
 					}
+					break;
+				default:
+					image = image;
 					break;
 			}
 			g2.drawImage(image, (int) screenView.x, (int) screenView.y, null);

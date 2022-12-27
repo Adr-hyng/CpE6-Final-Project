@@ -1,4 +1,4 @@
-package com.adrian.objects;
+package com.adrian.obstacles;
 
 import com.adrian.entity.Entity;
 import com.adrian.user_interface.GamePanel;
@@ -13,5 +13,11 @@ public class Chest extends Entity {
 	@Override
 	protected void getSprite() {
 		image = this.loadSprite("objects\\chest.png");
+	}
+
+	@Override
+	public void trigger() {
+		// TODO Auto-generated method stub
+		
 	}
 }
