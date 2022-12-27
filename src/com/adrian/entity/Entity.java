@@ -39,6 +39,9 @@ public abstract class Entity {
 	// Character Status
 	public int maxLife;
 	public int currentLife = 0;
+	public boolean invincible = false;
+	public int invincibleCount = 0;
+	public int type;
 	
 	public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 	public int solidAreaDefaultX, solidAreaDefaultY;
@@ -65,6 +68,16 @@ public abstract class Entity {
 	
 	protected void startMove() {}
 	
+	protected void contactPlayer() {
+		boolean contactPlayer = gp.collisionHandler.collidePlayer(this);
+		if (this.type == 2 && contactPlayer == true) {
+			if(!gp.player.invincible) {
+				gp.player.currentLife --;
+				gp.player.invincible = true;
+			}
+		}
+	}
+	
 	public void update() {
 		double currentX = this.worldPosition.x;
 		double currentY = this.worldPosition.y;
@@ -73,11 +86,13 @@ public abstract class Entity {
 		try {
 			if(!walkthroughWalls) gp.collisionHandler.collideTile(this);
 		} catch (IndexOutOfBoundsException e) {
-			System.exit(0);   
+			System.out.println("Tile ERrror. " + this.getClass().getName());
 		}
 		if(!(this instanceof Player)) {
-			gp.collisionHandler.collidePlayer(this);
+			this.contactPlayer();
 			gp.collisionHandler.collideEntity(this, gp.npcs);
+			gp.collisionHandler.collideEntity(this, gp.monsters);
+			gp.collisionHandler.collideEntity(this, gp.obstacles);
 			gp.collisionHandler.collideObject(this, false);
 		}
 		if(!this.collisionOn && isMoving) {
@@ -110,6 +125,14 @@ public abstract class Entity {
 					spriteNum = 1;
 				}
 				spriteCounter = 0;
+			}
+		}
+		
+		if (invincible) {
+			invincibleCount++;
+			if (invincibleCount > 60) {
+				invincible = false;
+				invincibleCount = 0;
 			}
 		}
 	}

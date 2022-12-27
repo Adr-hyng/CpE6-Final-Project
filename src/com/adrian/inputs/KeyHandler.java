@@ -5,8 +5,6 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.border.TitledBorder;
-
 import com.adrian.user_interface.GamePanel;
 import com.adrian.user_interface.GameState;
 
@@ -47,7 +45,11 @@ public class KeyHandler implements KeyListener{
 				
 				if(code == KeyEvent.VK_ENTER) {
 					if(gp.ui.selectionY + 1 == GameState.Continue.state) {
-						gp.loadGame(gp.player, 1);
+						try{
+							gp.loadGame(gp.player, 1);
+						} catch (Exception ex) {
+							ex.printStackTrace();
+						}
 						gp.playMusic(0);
 						gp.gameState = GameState.Continue.state;
 					}
@@ -60,6 +62,7 @@ public class KeyHandler implements KeyListener{
 					else if(gp.ui.selectionY == gp.ui.menuOption.size() - 1) {
 						gp.gameThread = null;
 						System.exit(0);
+						System.out.println("End");
 					}
 				}
 			}

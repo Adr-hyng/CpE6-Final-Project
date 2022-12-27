@@ -8,7 +8,7 @@ import com.adrian.user_interface.GamePanel;
 public class NPC extends Entity{
 	public NPC(GamePanel gp) {
 		super(gp);
-		
+		name = "NPC";
 		direction = "down";
 		movementSpeed = 1;
 		isMoving = true;
@@ -60,7 +60,7 @@ public class NPC extends Entity{
 		actionLockCounter++;
 		if(actionLockCounter > 120) {
 			Random random = new Random();
-			int i = random.nextInt(125) + 1; // Range 1-100
+			int i = random.nextInt(100) + 1; // Range 1-100
 			
 			if(i <= 25) {
 				direction = "up";
@@ -85,6 +85,5 @@ public class NPC extends Entity{
 			}
 			actionLockCounter = 0;
 		}
-		
 	}
 }

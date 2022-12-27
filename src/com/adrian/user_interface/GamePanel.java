@@ -80,6 +80,9 @@ public class GamePanel extends JPanel implements Runnable {
 	// Obstacles
 	public Entity obstacles[] = new Entity[10];
 	
+	// Monsters
+	public Entity monsters[] = new Entity[20];
+	
 	// Item Objects
 	public ItemObject itemObjects[] = new ItemObject[10];
 	
@@ -90,6 +93,7 @@ public class GamePanel extends JPanel implements Runnable {
 	public Player player = new Player(this, keyInput, new Vector2D(tileSize * 30, tileSize * 28));	
 	
 	public int gameState;
+	public int recursionCount = 0;
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth + (tileSize / 2) - (originalTileSize / 2), screenHeight + tileSize - (originalTileSize / 2)));
@@ -120,16 +124,19 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	public void loadGame(Entity entity, int index) {
 		try {
+			connectDB();
 			entity.worldPosition.x = Integer.parseInt((String) db.readDB("x", "entity", "idNo = " + index + ";").get(0));
 			entity.worldPosition.y = Integer.parseInt((String) db.readDB("y", "entity", "idNo = " + index + ";").get(0));
 			entity.currentLife = Integer.parseInt((String) db.readDB("hp", "entity", "idNo = " + index + ";").get(0));
 		} catch (NumberFormatException | SQLException | NullPointerException e) {
 			System.out.println("Current Saved File is corrupted. Please create new game.");
+			e.printStackTrace();
 		}
 	}
 	
 	public void newGame(Entity entity, int index) {
 		try {
+			connectDB();
 			db.updateDB((int) entity.worldPosition.x, "entity", "x", index);
 			db.updateDB((int) entity.worldPosition.y, "entity", "y", index);
 			db.updateDB((int) entity.currentLife, "entity", "hp", index);
@@ -155,6 +162,7 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	public void saveGame(Entity entity) {
 		try {
+			connectDB();
 			db.updateDB((int) entity.worldPosition.x, "entity", "x", 1);
 			db.updateDB((int) entity.worldPosition.y, "entity", "y", 1);
 			db.updateDB((int) entity.currentLife, "entity", "hp", 1);
@@ -174,6 +182,7 @@ public class GamePanel extends JPanel implements Runnable {
 		assetHandler.setItemObject();
 		assetHandler.setObstacle();
 		assetHandler.setNPC();
+		assetHandler.setMonster();
 		gameState = GameState.Menu.state;
 	}
 	
@@ -219,9 +228,16 @@ public class GamePanel extends JPanel implements Runnable {
 					npcs[i].update();
 				}
 			}
+			
 			for(int i = 0; i < obstacles.length; i++) {
 				if(obstacles[i] != null) {
 					obstacles[i].update();
+				}
+			}
+			
+			for(int i = 0; i < monsters.length; i++) {
+				if(monsters[i] != null) {
+					monsters[i].update();
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 package com.adrian.entity;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -83,7 +84,7 @@ public class Player extends Entity {
 	
 	private void checkDied() {
 		if(this.currentLife <= 0) {
-			System.exit(0);
+			System.out.println("Game over");
 		}
 	}
 	
@@ -91,13 +92,21 @@ public class Player extends Entity {
 	protected void startMove() {
 		checkDied();
 		plugController();
-		int objectIndex = gp.collisionHandler.collideObject(this, true);
-		int npcIndex = gp.collisionHandler.collideEntity(this, gp.npcs);
-		int obstacleIndex = gp.collisionHandler.collideEntity(this, gp.obstacles);
-		pickUpObject(objectIndex);
-		interactObstacle(obstacleIndex);
-		interactEntity(npcIndex);
 		gp.eventHandler.checkEvent();
+		int objectIndex = gp.collisionHandler.collideObject(this, true);
+		try{
+			int npcIndex = gp.collisionHandler.collideEntity(this, gp.npcs);
+			int obstacleIndex = gp.collisionHandler.collideEntity(this, gp.obstacles);
+			int monsterIndex = gp.collisionHandler.collideEntity(this, gp.monsters);
+			contactMonster(monsterIndex);
+			interactEntity(npcIndex, gp.npcs);
+			interactEntity(obstacleIndex, gp.obstacles);
+			interactEntity(monsterIndex, gp.monsters);
+		} catch (NullPointerException e) {
+			System.out.println("Not initialized. " + this.getClass().getName());
+		}
+		pickUpObject(objectIndex);
+		System.out.println("Is Invincible: " + invincible + " at " + invincibleCount);
 		return;
 	}
 	
@@ -106,45 +115,51 @@ public class Player extends Entity {
 		// Should
 		int findIndex = gp.itemObjects[index].getClass().getName().lastIndexOf(".") + 1;
 		String objectCode = gp.itemObjects[index].getClass().getName();
-		objectCode = objectCode.substring(findIndex, objectCode.length() - 1);
+		objectCode = objectCode.substring(findIndex, objectCode.length());
 		switch(objectCode) {
 		case "Key":
-			break;
-		case "Door":
-			break;
-		case "Boot":
-			System.out.println("Boots");
+			gp.ui.currentDialogue = "You obtained a " + objectCode;
+			gp.gameState = GameState.Dialogue.state;
 			gp.itemObjects[index] = null;
 			break;
-		case "Chest":
+		case "Boots":
+			gp.ui.currentDialogue = "You obtained a " + objectCode;
+			gp.gameState = GameState.Dialogue.state;
+			gp.itemObjects[index] = null;
 			break;
 		}
 	}
 	
-	public void interactEntity(int index) {
+	public void interactEntity(int index, Entity[] entities) {
 		if(index == 999) {
 			return;
 		};
 		if(index != 999  && (keyInput.haveKeyPressed.get("ENTER"))) {
-			gp.gameState = GameState.Dialogue.state;
-			gp.npcs[index].trigger();
+			Entity entity = entities[index];
+			entity.trigger();
+			switch (entity.name) {
+			case "Green Slime":
+				break;
+			case "Door":
+				gp.gameState = GameState.Dialogue.state;
+				entity.trigger();
+				entity = null;
+				break;
+			case "NPC":
+				gp.gameState = GameState.Dialogue.state;
+				break;
+			}
 		}
 		keyInput.haveKeyPressed.replace("ENTER", false);	
 	}
 	
-	public void interactObstacle(int index) {
-		if(index == 999) {
-			return;
-		};
-		if(index != 999  && (keyInput.haveKeyPressed.get("ENTER"))) {
-			gp.gameState = GameState.Dialogue.state;
-			gp.obstacles[index].trigger();
-			gp.npcs[index] = null;
+	public void contactMonster(int index) {
+		if (index == 999) return;
+		if(!invincible) {
+			currentLife -= 1;
+			invincible = true;
 		}
-		keyInput.haveKeyPressed.replace("ENTER", false);
-		
 	}
-	
 	
 	@Override
 	protected void getSprite() {
@@ -195,7 +210,9 @@ public class Player extends Entity {
 				}
 				break;
 		}
+		if (invincible && invincibleCount % 5 == 0) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
 		g.drawImage(image, (int) screen.x, (int) screen.y, null);
+		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 	}
 
 	@Override
