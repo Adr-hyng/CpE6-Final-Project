@@ -70,7 +70,11 @@ public abstract class Entity {
 		double currentY = this.worldPosition.y;
 		startMove();
 		collisionOn = false;
-		if(!walkthroughWalls) gp.collisionHandler.collideTile(this);
+		try {
+			if(!walkthroughWalls) gp.collisionHandler.collideTile(this);
+		} catch (IndexOutOfBoundsException e) {
+			System.exit(0);   
+		}
 		if(!(this instanceof Player)) {
 			gp.collisionHandler.collidePlayer(this);
 			gp.collisionHandler.collideEntity(this, gp.npcs);
@@ -154,7 +158,6 @@ public abstract class Entity {
 					}
 					break;
 				default:
-					image = image;
 					break;
 			}
 			g2.drawImage(image, (int) screenView.x, (int) screenView.y, null);

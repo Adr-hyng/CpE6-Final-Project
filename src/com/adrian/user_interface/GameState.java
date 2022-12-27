@@ -2,8 +2,8 @@ package com.adrian.user_interface;
 
 public enum GameState {
 	Menu(0),
-    Play(1),
-    NewClass(2),
+    Continue(1),
+    NewGame(2),
     Pause(100),
     Dialogue(101);
 

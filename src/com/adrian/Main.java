@@ -29,7 +29,7 @@ public class Main {
 		WindowListener listener = new WindowAdapter() {
 			public void windowClosing(WindowEvent evt) {
 				try {
-					gamePanel.updateDB(gamePanel.player);
+					gamePanel.saveGame(gamePanel.player);
 					
 				} catch (NumberFormatException e) {
 					e.printStackTrace();

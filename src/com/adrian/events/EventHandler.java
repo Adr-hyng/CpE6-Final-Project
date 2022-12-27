@@ -46,12 +46,14 @@ public class EventHandler {
 		}
 		
 		if (canTouchEvent) {
-			if(hit(34, 25, "any")) {
-				this.damagePit(34, 25, GameState.Dialogue.state);
+			for(int i = 28; i <= 30; i++) {
+				if(hit(i, 12, "any")) {
+					this.damagePit(i, 12, GameState.Dialogue.state);
+				}
 			}
 			
-			if(hit(28, 21, "up")) {
-				healingPool(28, 21, GameState.Dialogue.state);
+			if(hit(28, 8, "up")) {
+				healingPool(28, 8, GameState.Dialogue.state);
 			}
 		}
 	}
@@ -85,8 +87,8 @@ public class EventHandler {
 	public void damagePit(int col, int row, int gameState) {
 		gp.ui.dialogueOffset.y = 7;
 		gp.gameState = gameState;
-		gp.ui.currentDialogue = "You stepped a branch.";
-		gp.player.currentLife--;
+		gp.ui.currentDialogue = "You fall into the water, and \ncan\'t swim";
+		gp.player.currentLife = 0;
 		canTouchEvent = false;
 	}
 	

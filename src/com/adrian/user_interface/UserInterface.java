@@ -42,7 +42,8 @@ public class UserInterface {
 		this.gp = gp;
 		this.dialogueOffset = new Vector2D(0, 0);
 		this.menuOption = new ArrayList<>() {{
-			add("Play");
+			add("Continue");
+			add("New Game");
 			add("Option");
 			add("Exit");
 		}};
@@ -93,7 +94,7 @@ public class UserInterface {
 			drawTitleScreen();
 		}
 		
-		else if(gp.gameState == GameState.Play.state) {
+		else if(gp.gameState == GameState.Continue.state) {
 			drawPlayerLife();
 		}
 		
@@ -168,7 +169,7 @@ public class UserInterface {
 			for(int i = 0; i < menuOption.size(); i++) {
 				createSubTitleText(menuOption.get(i), x, y, 0, defaultSelectionY + (i));
 			}
-			createSubTitleText(">>", x, y, -2, selectionY + defaultSelectionY);
+			createSubTitleText(">>", x, y, -3, selectionY + defaultSelectionY);
 		}
 		
 		else if (titleScreenState == 1) {
@@ -188,7 +189,7 @@ public class UserInterface {
 				}
 				createSubTitleText(classOption.get(i), x, y, 0, 3 + (i));
 			}
-			createSubTitleText(">>", x, y, -2, selectionY + 3);
+			createSubTitleText(">>", x, y, -3, selectionY + 3);
 		}
 		
 	}

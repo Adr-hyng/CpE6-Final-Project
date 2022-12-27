@@ -20,6 +20,7 @@ public class KeyHandler implements KeyListener{
 		put("S", false);
 		put("D", false);
 		put("ENTER", false);
+		put("SPACE", false);
 		put("T", false); // Test
 		put("ESC", false);
 	}};
@@ -45,16 +46,18 @@ public class KeyHandler implements KeyListener{
 				}
 				
 				if(code == KeyEvent.VK_ENTER) {
-					if(gp.ui.selectionY + 1 == GameState.Play.state) {
-//						gp.gameState = gp.ui.selectionY + 1;
+					if(gp.ui.selectionY + 1 == GameState.Continue.state) {
+						gp.loadGame(gp.player, 1);
+						gp.playMusic(0);
+						gp.gameState = GameState.Continue.state;
+					}
+					
+					else if(gp.ui.selectionY + 1 == GameState.NewGame.state) {
 						gp.ui.titleScreenState = 1;
-						
+						gp.ui.selectionY = 0;
 					}
 					
-					else if(gp.ui.selectionY == 1) {
-					}
-					
-					else if(gp.ui.selectionY == 2) {
+					else if(gp.ui.selectionY == gp.ui.menuOption.size() - 1) {
 						gp.gameThread = null;
 						System.exit(0);
 					}
@@ -74,12 +77,14 @@ public class KeyHandler implements KeyListener{
 				if(code == KeyEvent.VK_ENTER) {
 					if(gp.ui.selectionY == 0) {
 						gp.playMusic(0);
-						gp.gameState = GameState.Play.state;
+						gp.newGame(gp.player, 1);
+						gp.gameState = GameState.Continue.state;
 					}
 					
 					else if(gp.ui.selectionY == 1) {
 						gp.playMusic(0);
-						gp.gameState = GameState.Play.state;
+						gp.newGame(gp.player, 1);
+						gp.gameState = GameState.Continue.state;
 					}
 					
 					else if(gp.ui.selectionY == 3) {
@@ -90,7 +95,7 @@ public class KeyHandler implements KeyListener{
 			}
 		}
 		
-		else if (gp.gameState == GameState.Play.state) {
+		else if (gp.gameState == GameState.Continue.state) {
 			if(code == KeyEvent.VK_W) {
 				haveKeyPressed.replace("W", true);
 			}
@@ -108,6 +113,10 @@ public class KeyHandler implements KeyListener{
 				haveKeyPressed.replace("ENTER", true);
 			}
 			
+			if(code == KeyEvent.VK_SPACE) {
+				haveKeyPressed.replace("SPACE", true);
+			}
+			
 			if(code == KeyEvent.VK_P) {
 				gp.gameState = GameState.Pause.state;
 			}
@@ -120,7 +129,7 @@ public class KeyHandler implements KeyListener{
 		
 		else if (gp.gameState == GameState.Pause.state) {
 			if(code == KeyEvent.VK_P) {
-				gp.gameState = GameState.Play.state;
+				gp.gameState = GameState.Continue.state;
 			}
 		}
 		
@@ -151,6 +160,10 @@ public class KeyHandler implements KeyListener{
 		
 		if(code == KeyEvent.VK_ENTER) {
 			haveKeyPressed.replace("ENTER", false);
+		}
+
+		if(code == KeyEvent.VK_SPACE) {
+			haveKeyPressed.replace("SPACE", false);
 		}
 		
 		if(code == KeyEvent.VK_ESCAPE) {

@@ -16,22 +16,23 @@ public class AssetSetter {
 	
 	public void setItemObject() {
 		gp.itemObjects[0] = new Boots(gp);
-		gp.itemObjects[0].worldPosition = new Vector2D(gp.tileSize * 21, gp.tileSize * 22);
+		gp.itemObjects[0].worldPosition = new Vector2D(gp.tileSize * 45, gp.tileSize * 33);
 	}
 	
 	public void setObstacle() {
 		gp.obstacles[0] = new Door(gp);
-		gp.obstacles[0].worldPosition = new Vector2D(28 * gp.tileSize, 24 * gp.tileSize);
+		gp.obstacles[0].worldPosition = new Vector2D(28 * gp.tileSize, 14 * gp.tileSize);
+		
+		gp.obstacles[1] = new Door(gp);
+		gp.obstacles[1].worldPosition = new Vector2D(46 * gp.tileSize, 27 * gp.tileSize);
 	}
 	
 	public void setNPC() {
+		// BUG WHEN 1st Index
 		gp.npcs[0] = new NPC(gp);
-		gp.npcs[1] = new NPC(gp);
 		gp.npcs[2] = new NPC(gp);
-		
-		gp.npcs[0].worldPosition = new Vector2D(gp.tileSize * 21, gp.tileSize * 21);
-		gp.npcs[1].worldPosition = new Vector2D(gp.tileSize * 24, gp.tileSize * 21);
-		gp.npcs[2].worldPosition = new Vector2D(gp.tileSize * 24, gp.tileSize * 22);
+		gp.npcs[0].worldPosition = new Vector2D(gp.tileSize * 46, gp.tileSize * 32);
+		gp.npcs[2].worldPosition = new Vector2D(gp.tileSize * 34, gp.tileSize * 33);
 	}
 	
 	public void compressEntities() {

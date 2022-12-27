@@ -1,4 +1,4 @@
-package com.adrian.user_interface;
+package com.adrian.database;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

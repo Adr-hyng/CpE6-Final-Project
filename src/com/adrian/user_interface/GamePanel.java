@@ -12,6 +12,7 @@ import java.util.Comparator;
 import javax.swing.JPanel;
 
 import com.adrian.collisions.CollisionHandler;
+import com.adrian.database.DatabaseManager;
 import com.adrian.entity.Entity;
 import com.adrian.entity.Player;
 import com.adrian.events.EventHandler;
@@ -86,7 +87,7 @@ public class GamePanel extends JPanel implements Runnable {
 	public ArrayList<Entity> entityList = new ArrayList<>();
 	
 	// Player
-	public Player player = new Player(this, keyInput, new Vector2D(tileSize * 28, tileSize * 21));	
+	public Player player = new Player(this, keyInput, new Vector2D(tileSize * 30, tileSize * 28));	
 	
 	public int gameState;
 	
@@ -117,12 +118,31 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 	}
 	
+	public void loadGame(Entity entity, int index) {
+		try {
+			entity.worldPosition.x = Integer.parseInt((String) db.readDB("x", "entity", "idNo = " + index + ";").get(0));
+			entity.worldPosition.y = Integer.parseInt((String) db.readDB("y", "entity", "idNo = " + index + ";").get(0));
+			entity.currentLife = Integer.parseInt((String) db.readDB("hp", "entity", "idNo = " + index + ";").get(0));
+		} catch (NumberFormatException | SQLException | NullPointerException e) {
+			System.out.println("Current Saved File is corrupted. Please create new game.");
+		}
+	}
+	
+	public void newGame(Entity entity, int index) {
+		try {
+			db.updateDB((int) entity.worldPosition.x, "entity", "x", index);
+			db.updateDB((int) entity.worldPosition.y, "entity", "y", index);
+			db.updateDB((int) entity.currentLife, "entity", "hp", index);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void processDB(Entity entity, int index) throws NumberFormatException, SQLException {
 		int dbX = Integer.parseInt((String) db.readDB("x", "entity", "idNo = " + index + ";").get(0));
 		int dbY = Integer.parseInt((String) db.readDB("y", "entity", "idNo = "+ index +";").get(0));
 		
 		if(dbX == 0 && dbY == 0) {
-			System.out.println("New Game");
 			db.updateDB((int) entity.worldPosition.x, "entity", "x", index);
 			db.updateDB((int) entity.worldPosition.y, "entity", "y", index);
 			db.updateDB((int) entity.currentLife, "entity", "hp", index);
@@ -133,7 +153,7 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 	}
 	
-	public void updateDB(Entity entity) {
+	public void saveGame(Entity entity) {
 		try {
 			db.updateDB((int) entity.worldPosition.x, "entity", "x", 1);
 			db.updateDB((int) entity.worldPosition.y, "entity", "y", 1);
@@ -148,7 +168,6 @@ public class GamePanel extends JPanel implements Runnable {
 	public void worldSetup() {
 		try {
 			this.connectDB();
-			this.processDB(player, 1);
 		} catch (SQLException | NumberFormatException e) {
 			e.printStackTrace();
 		}
@@ -193,7 +212,7 @@ public class GamePanel extends JPanel implements Runnable {
 			
 		}
 		
-		else if(gameState == GameState.Play.state) {
+		else if(gameState == GameState.Continue.state) {
 			player.update();
 			for(int i = 0; i < npcs.length; i++) {
 				if(npcs[i] != null) {
@@ -212,7 +231,7 @@ public class GamePanel extends JPanel implements Runnable {
 		
 		else if(gameState == GameState.Dialogue.state) {
 			if(keyInput.haveKeyPressed.get("ESC")) {
-				gameState = GameState.Play.state;
+				gameState = GameState.Continue.state;
 			}
 		}
 	}

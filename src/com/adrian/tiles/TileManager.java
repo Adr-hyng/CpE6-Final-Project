@@ -21,7 +21,7 @@ public class TileManager {
 	
 	InputStream textData;
 	BufferedReader openData;
-	String mapName = "test1";
+	String mapName = "test2";
 	
 	ArrayList<String> tilesPath = new ArrayList<>();
 	ArrayList<String> tilesCollisions = new ArrayList<>();

@@ -55,6 +55,24 @@ public class Player extends Entity {
 			direction = "left";
 			isMoving = true;
 		}
+		
+		else if(keyInput.haveKeyPressed.get("SPACE")) {
+			switch (direction) {
+			case "up":
+				this.worldPosition.y -= (gp.tileSize * 1);
+				break;
+			case "down":
+				this.worldPosition.y += (gp.tileSize * 1);
+				break;
+			case "left":
+				this.worldPosition.x -= (gp.tileSize * 1);
+				break;
+			case "right":
+				this.worldPosition.x += (gp.tileSize * 1);
+				break;
+			}
+		}
+		
 		else if(!keyInput.haveKeyPressed.get("W") &&
 				!keyInput.haveKeyPressed.get("S") &&
 				!keyInput.haveKeyPressed.get("A") &&
@@ -63,15 +81,23 @@ public class Player extends Entity {
 		}
 	}
 	
+	private void checkDied() {
+		if(this.currentLife <= 0) {
+			System.exit(0);
+		}
+	}
+	
 	@Override
 	protected void startMove() {
+		checkDied();
 		plugController();
 		int objectIndex = gp.collisionHandler.collideObject(this, true);
 		int npcIndex = gp.collisionHandler.collideEntity(this, gp.npcs);
 		int obstacleIndex = gp.collisionHandler.collideEntity(this, gp.obstacles);
-		gp.eventHandler.checkEvent();
 		pickUpObject(objectIndex);
 		interactObstacle(obstacleIndex);
+		interactEntity(npcIndex);
+		gp.eventHandler.checkEvent();
 		return;
 	}
 	
