@@ -12,7 +12,7 @@ public class Chest extends Entity {
 
 	@Override
 	protected void getSprite() {
-		image = this.loadSprite("objects\\chest.png");
+		image = this.loadSprite("objects\\chest.png", gp.tileSize, gp.tileSize);
 	}
 
 	@Override

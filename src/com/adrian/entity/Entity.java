@@ -1,5 +1,6 @@
 package com.adrian.entity;
 
+import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -19,22 +20,28 @@ public abstract class Entity {
 	public GamePanel gp;
 	
 	public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-	public String direction = "down";
+	public BufferedImage attack_up1, attack_up2, attack_down1, attack_down2, attack_left1, attack_left2, attack_right1, attack_right2;
+	public BufferedImage image;
 	
 	public double movementSpeed;
+	public String direction = "down";
 	public boolean isMoving = false;
-	public Vector2D worldPosition;
-	public BufferedImage image;
+	
+	public boolean attacking = false;
+	public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
+	
 	public String name;
 	public boolean collision = false;
+	public Vector2D worldPosition;
 	
 	public int spriteCounter = 0;
 	public int spriteNum = 1;
+	
 	public int actionLockCounter = 0;
 	public int moveLockCounter = 0;
 	
 	protected String dialogues[] = new String[20];
-	int dialogueIndex = 0; 
+	protected int dialogueIndex = 0; 
 	
 	// Character Status
 	public int maxLife;
@@ -53,11 +60,11 @@ public abstract class Entity {
 	
 	protected abstract void getSprite();
 	
-	protected BufferedImage loadSprite(final String imagePath) {
+	protected BufferedImage loadSprite(final String imagePath, int width, int height) {
 		image = null;
 		try {
 			image = ImageIO.read(new File(GlobalTool.assetsDirectory + imagePath));
-			image = GlobalTool.utilityTool.scaleImage(image, gp.tileSize, gp.tileSize);
+			image = GlobalTool.utilityTool.scaleImage(image, width, height);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -97,40 +104,30 @@ public abstract class Entity {
 		}
 		if(!this.collisionOn && isMoving) {
 			switch(direction) {
-			case "up":
-				this.worldPosition.y -= this.movementSpeed;
-				break;
-			case "down":
-				this.worldPosition.y += this.movementSpeed;
-				break;
-			case "left":
-				this.worldPosition.x -= this.movementSpeed;
-				break;
-			case "right":
-				this.worldPosition.x += this.movementSpeed;
-				break;
+			case "up": this.worldPosition.y -= this.movementSpeed; break;
+			case "down": this.worldPosition.y += this.movementSpeed; break;
+			case "left": this.worldPosition.x -= this.movementSpeed; break;
+			case "right": this.worldPosition.x += this.movementSpeed; break;
 			}
 		}
 		
-		// Sprite Animation
+		// Sprite Animation Moving
 		if( ((this.worldPosition.x - currentX) == 0) && ((this.worldPosition.y - currentY) == 0)) {
-			spriteNum = 1;
-		} else {
+//			spriteNum = 1;
+		}
+		else {
+			
 			spriteCounter++;
 			if(spriteCounter > 10) {
-				if(spriteNum == 1) {
-					spriteNum = 2;
-				}
-				else if(spriteNum == 2) {
-					spriteNum = 1;
-				}
+				if(spriteNum == 1) spriteNum = 2;
+				else if(spriteNum == 2) spriteNum = 1;
 				spriteCounter = 0;
 			}
 		}
 		
 		if (invincible) {
 			invincibleCount++;
-			if (invincibleCount > 60) {
+			if (invincibleCount > 40) {
 				invincible = false;
 				invincibleCount = 0;
 			}
@@ -147,43 +144,57 @@ public abstract class Entity {
 		   worldPosition.x - (gp.tileSize * screenOffset) < gp.player.worldPosition.x + gp.player.screen.x &&
 		   worldPosition.y + (gp.tileSize * screenOffset) > gp.player.worldPosition.y - gp.player.screen.y &&
 		   worldPosition.y - (gp.tileSize * screenOffset) < gp.player.worldPosition.y + gp.player.screen.y) {
+			Vector2D tempScreen = new Vector2D(screenView.x, screenView.y);
+			
 			switch(direction) {
-				case "up":
-					if (spriteNum == 1) {
-						image = up1;
-					}
-					if (spriteNum == 2) {
-						image = up2;
-					}
-					break;
-				case "down":
-					if (spriteNum == 1) {
-						image = down1;
-					}
-					if (spriteNum == 2) {
-						image = down2;
-					}
-					break;
-				case "right":
-					if (spriteNum == 1) {
-						image = right1;
-					}
-					if (spriteNum == 2) {
-						image = right2;
-					}
-					break;
-				case "left":
-					if (spriteNum == 1) {
-						image = left1;
-					}
-					if (spriteNum == 2) {
-						image = left2;
-					}
-					break;
-				default:
-					break;
+			case "up":
+				if (!attacking) {
+					if (spriteNum == 1) image = up1;
+					if (spriteNum == 2) image = up2;
+				}
+				if (attacking) {
+					tempScreen.y = screenView.y - gp.tileSize;
+					if (spriteNum == 1) image = attack_up1;
+					if (spriteNum == 2) image = attack_up2;
+				}
+				break;
+			case "down":
+				if (!attacking) {
+					if (spriteNum == 1) image = down1;
+					if (spriteNum == 2) image = down2;
+				}
+				if (attacking) {
+					if (spriteNum == 1) image = attack_down1;
+					if (spriteNum == 2) image = attack_down2;
+				}
+				break;
+			case "right":
+				if (!attacking) {
+					if (spriteNum == 1) image = right1;
+					if (spriteNum == 2) image = right2;
+				}
+				if (attacking) {
+					if (spriteNum == 1) image = attack_right1;
+					if (spriteNum == 2) image = attack_right2;
+				}
+				break;
+			case "left":
+				if (!attacking) {
+					if (spriteNum == 1) image = left1;
+					if (spriteNum == 2) image = left2;
+				}
+				if (attacking) {
+					tempScreen.x = screenView.x - gp.tileSize;
+					if (spriteNum == 1) image = attack_left1;
+					if (spriteNum == 2) image = attack_left2;
+				}
+				break;
+			default:
+				break;
 			}
-			g2.drawImage(image, (int) screenView.x, (int) screenView.y, null);
+			if (invincible && invincibleCount % 5 == 0) g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+			g2.drawImage(image, (int) tempScreen.x, (int) tempScreen.y, null);
+			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 		}
 	}
 }

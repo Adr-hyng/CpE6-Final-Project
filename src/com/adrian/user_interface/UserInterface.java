@@ -5,13 +5,18 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 
 import com.adrian.GlobalTool;
 import com.adrian.objects.Heart;
@@ -29,6 +34,8 @@ public class UserInterface {
 	
 	public String currentDialogue = "";
 	public Vector2D dialogueOffset;
+	
+	public String titleScreen = "Rad-dew's Adventure";
 	
 	public List<String> menuOption;
 	public List<String> classOption;
@@ -50,7 +57,7 @@ public class UserInterface {
 		
 		this.classOption = new ArrayList<>() {{
 			add("Fighter");
-			add("Mage");
+			add("Rogue");
 			add("Back");
 		}};
 		
@@ -142,51 +149,62 @@ public class UserInterface {
 		}
 	}
 	
+
 	public void drawTitleScreen() {
+		g2.setColor(new Color(0, 0, 0));
+		g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 80F));
+		
+		Image image;
+		image = new ImageIcon(System.getProperty("user.dir") + "\\res\\background.gif").getImage();
+		g2.drawImage(image, 0, 0, gp.screenWidth, gp.screenHeight, null);
+		
 		if(titleScreenState == 0) {
-			g2.setColor(new Color(0, 0, 0));
-			g2.fillRect(0, 0, gp.screenWidth, gp.screenHeight);
-			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 96F));
-			String text = "MY TITLE";
-			int x = getCenterText(text);
+			g2.setColor(new Color(168, 138, 93));
+			int x = getCenterText(titleScreen);
 			int y = gp.tileSize * 2;
 			
 			// Title Shadow
-			g2.setColor(Color.gray);
-			g2.drawString(text, x + 5, y + 5);
+			g2.setColor(new Color(97, 84, 66));
+			g2.drawString(titleScreen, x + 5, y + 5);
 			
 			// Title Main
-			g2.setColor(Color.white);
-			g2.drawString(text, x, y);
+			g2.setColor(new Color(168, 138, 93));
+			g2.drawString(titleScreen, x, y);
 			
 			// Logo
 			x = gp.screenWidth / 2 - (gp.tileSize * 2) / 2;
 			y += gp.tileSize * 2;
-			g2.drawImage(gp.player.down1, x, y, gp.tileSize * 2, gp.tileSize * 2, null);
+			image = new ImageIcon(System.getProperty("user.dir") + "\\res\\logo.png").getImage();
+			g2.drawImage(image, x, y, gp.tileSize * 3, gp.tileSize * 3, null);
 			
 			// Menu
 			g2.setFont(g2.getFont().deriveFont(Font.BOLD, 50F));
 			for(int i = 0; i < menuOption.size(); i++) {
+				g2.setColor(new Color(168, 138, 93));
 				createSubTitleText(menuOption.get(i), x, y, 0, defaultSelectionY + (i));
 			}
 			createSubTitleText(">>", x, y, -3, selectionY + defaultSelectionY);
 		}
 		
 		else if (titleScreenState == 1) {
-			g2.setColor(Color.white);
+			
 			g2.setFont(futilePro.deriveFont(Font.PLAIN, 42F));
 			
 			String text = "SELECT YOUR CLASS";
 			int x = getCenterText(text);
 			int y = gp.tileSize * 3;
+			g2.setColor(new Color(168, 138, 93));
 			g2.drawString(text, x, y);
 			
 			
 			for(int i = 0; i < classOption.size(); i++) {
 				if (i >= classOption.size() - 1) {
+					g2.setColor(new Color(168, 138, 93));
 					createSubTitleText(classOption.get(i), x, y, 0, 3 + (i + 1));
 					break;
 				}
+				g2.setColor(new Color(191, 74, 42));
 				createSubTitleText(classOption.get(i), x, y, 0, 3 + (i));
 			}
 			createSubTitleText(">>", x, y, -3, selectionY + 3);

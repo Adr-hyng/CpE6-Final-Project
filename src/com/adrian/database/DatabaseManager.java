@@ -170,11 +170,12 @@ public class DatabaseManager {
 				+ tableName
 				+ " ("
 				+ columnQuery
-				+ ") VALUES (?, ?, ?, ?)");
+				+ ") VALUES (?, ?, ?, ?, ?)");
 	    POST.setInt(1, Integer.parseInt(data[0]));
 	    POST.setInt(2, Integer.parseInt(data[1]));
 	    POST.setInt(3, Integer.parseInt(data[2]));
-	    POST.setString(4, data[3]);
+	    POST.setInt(4, Integer.parseInt(data[3]));
+	    POST.setString(5, data[4]);
 	    POST.execute();
 	}
 	

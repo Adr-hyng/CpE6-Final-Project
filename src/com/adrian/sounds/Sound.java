@@ -20,7 +20,12 @@ public class Sound {
 				soundURL[1] = new File(GlobalTool.assetsDirectory + "sounds\\coin.wav").toURI().toURL();
 				soundURL[2] = new File(GlobalTool.assetsDirectory + "sounds\\powerup.wav").toURI().toURL();
 				soundURL[3] = new File(GlobalTool.assetsDirectory + "sounds\\unlock.wav").toURI().toURL();
-				soundURL[4] = new File(GlobalTool.assetsDirectory + "sounds\\fanfare.wav").toURI().toURL();
+				
+				soundURL[4] = new File(GlobalTool.assetsDirectory + "sounds\\hitmonster.wav").toURI().toURL();
+				soundURL[5] = new File(GlobalTool.assetsDirectory + "sounds\\receivedamage.wav").toURI().toURL();
+				soundURL[6] = new File(GlobalTool.assetsDirectory + "sounds\\speak.wav").toURI().toURL();
+				soundURL[7] = new File(GlobalTool.assetsDirectory + "sounds\\levelup.wav").toURI().toURL();
+				soundURL[8] = new File(GlobalTool.assetsDirectory + "sounds\\gameover.wav").toURI().toURL();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}

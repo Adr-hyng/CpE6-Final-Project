@@ -18,22 +18,12 @@ public class Door extends Entity {
 		this.getSprite();
 	}
 	
-	public void setDialogue() {
-		dialogues[0] = "You unlocked the door.";
-	}
-
 	@Override
 	protected void getSprite() {
-		this.image = this.loadSprite("objects\\door.png");
+		this.image = this.loadSprite("objects\\door.png", gp.tileSize, gp.tileSize);
 	}
 	
 	@Override
 	public void trigger() {
-		setDialogue();
-		gp.ui.currentDialogue = dialogues[0];
-		this.solidArea = new Rectangle(0, 0, 0, 0);
-		this.image = null;
-		gp.playSoundEffect(3);
 	}
-	
 }

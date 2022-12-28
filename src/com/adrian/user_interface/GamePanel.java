@@ -72,7 +72,7 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	// Sounds
 	Sound music = new Sound();
-	Sound soundEffects = new Sound();
+	public Sound soundEffects = new Sound();
 	
 	// NPC
 	public Entity npcs[] = new Entity[10];
@@ -90,10 +90,12 @@ public class GamePanel extends JPanel implements Runnable {
 	public ArrayList<Entity> entityList = new ArrayList<>();
 	
 	// Player
-	public Player player = new Player(this, keyInput, new Vector2D(tileSize * 30, tileSize * 28));	
+	final int respawnX = tileSize * 30;
+	final int respawnY = tileSize * 28;
+	public Player player = new Player(this, keyInput, new Vector2D(respawnX, respawnY));	
 	
 	public int gameState;
-	public int recursionCount = 0;
+	public boolean canPlay = true;
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth + (tileSize / 2) - (originalTileSize / 2), screenHeight + tileSize - (originalTileSize / 2)));
@@ -112,10 +114,11 @@ public class GamePanel extends JPanel implements Runnable {
 			db.createDatabase(schemaName);
 			db.createConnection(schemaName);
 			db.createTable(tableName, "hp INT(64), "
+					+ "maxhp INT(64),"
 					+ "x INT(64),"
 					+ "type VARCHAR(255),"
 					+ "y INT(64)");
-			db.addDB(new String[] {"0", "0", "0", "Player"}, "entity", "hp, x, y, type");
+			db.addDB(new String[] {"0", "0", "0", "0", "Player"}, "entity", "maxhp, hp, x, y, type");
 		}
 		else {
 			db.createConnection(schemaName);
@@ -128,6 +131,7 @@ public class GamePanel extends JPanel implements Runnable {
 			entity.worldPosition.x = Integer.parseInt((String) db.readDB("x", "entity", "idNo = " + index + ";").get(0));
 			entity.worldPosition.y = Integer.parseInt((String) db.readDB("y", "entity", "idNo = " + index + ";").get(0));
 			entity.currentLife = Integer.parseInt((String) db.readDB("hp", "entity", "idNo = " + index + ";").get(0));
+			entity.maxLife = Integer.parseInt((String) db.readDB("maxhp", "entity", "idNo = " + index + ";").get(0));
 		} catch (NumberFormatException | SQLException | NullPointerException e) {
 			System.out.println("Current Saved File is corrupted. Please create new game.");
 			e.printStackTrace();
@@ -137,9 +141,17 @@ public class GamePanel extends JPanel implements Runnable {
 	public void newGame(Entity entity, int index) {
 		try {
 			connectDB();
-			db.updateDB((int) entity.worldPosition.x, "entity", "x", index);
-			db.updateDB((int) entity.worldPosition.y, "entity", "y", index);
-			db.updateDB((int) entity.currentLife, "entity", "hp", index);
+			Player player = new Player(this, keyInput, new Vector2D(respawnX, respawnY));
+			db.updateDB(respawnX, "entity", "x", index);
+			db.updateDB(respawnY, "entity", "y", index);
+			db.updateDB(entity.currentLife, "entity", "hp", index);
+			db.updateDB(entity.maxLife, "entity", "maxhp", index);
+			
+			entity.worldPosition.x = Integer.parseInt((String) db.readDB("x", "entity", "idNo = " + index + ";").get(0));
+			entity.worldPosition.y = Integer.parseInt((String) db.readDB("y", "entity", "idNo = " + index + ";").get(0));
+			entity.currentLife = Integer.parseInt((String) db.readDB("hp", "entity", "idNo = " + index + ";").get(0));
+			entity.maxLife = Integer.parseInt((String) db.readDB("maxhp", "entity", "idNo = " + index + ";").get(0));
+			this.worldSetup();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -166,6 +178,7 @@ public class GamePanel extends JPanel implements Runnable {
 			db.updateDB((int) entity.worldPosition.x, "entity", "x", 1);
 			db.updateDB((int) entity.worldPosition.y, "entity", "y", 1);
 			db.updateDB((int) entity.currentLife, "entity", "hp", 1);
+			db.updateDB((int) entity.maxLife, "entity", "maxhp", 1);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -179,6 +192,7 @@ public class GamePanel extends JPanel implements Runnable {
 		} catch (SQLException | NumberFormatException e) {
 			e.printStackTrace();
 		}
+		assetHandler.reset();
 		assetHandler.setItemObject();
 		assetHandler.setObstacle();
 		assetHandler.setNPC();

@@ -86,3 +86,15 @@ zbigtree07.png
 true
 zbigtree08.png
 true
+zsmall_tree_bottom.png
+true
+zsmall_tree_top.png
+true
+zztrunk_bottom_left.png
+true
+zztrunk_bottom_right.png
+true
+zztrunk_top_left.png
+true
+zztrunk_top_right.png
+true

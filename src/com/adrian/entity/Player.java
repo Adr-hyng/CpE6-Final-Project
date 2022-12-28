@@ -3,7 +3,6 @@ package com.adrian.entity;
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 
 import com.adrian.inputs.KeyHandler;
 import com.adrian.user_interface.GamePanel;
@@ -15,7 +14,8 @@ public class Player extends Entity {
 	GamePanel gp;
 	KeyHandler keyInput;
 	
-	public final Vector2D screen;
+	public Vector2D screen;
+	public int keyCount = 0;
 	
 	public Player(GamePanel gp, KeyHandler keyInput, Vector2D position) {
 		super(gp);
@@ -26,12 +26,16 @@ public class Player extends Entity {
 		this.gp = gp;
 		this.keyInput = keyInput;
 		
+		
+		
 		// Default Values
 		this.worldPosition = position;
 		this.movementSpeed = 4;
+		
 		this.maxLife = 6;
 		this.currentLife = maxLife;
 		this.direction = "down";
+		this.attackArea = new Rectangle(0, 0, 36, 36);
 		
 		this.solidArea = new Rectangle(8, 16, 28, 28); // IMPROVEMENT: Use percentage to calculate the rect for responsiveness.
 		solidAreaDefaultX = this.solidArea.x;
@@ -40,6 +44,7 @@ public class Player extends Entity {
 	}
 	
 	private void plugController() {
+		
 		if(keyInput.haveKeyPressed.get("W")) {
 			direction = "up";
 			isMoving = true;
@@ -77,14 +82,68 @@ public class Player extends Entity {
 		else if(!keyInput.haveKeyPressed.get("W") &&
 				!keyInput.haveKeyPressed.get("S") &&
 				!keyInput.haveKeyPressed.get("A") &&
-				!keyInput.haveKeyPressed.get("D")) {
+				!keyInput.haveKeyPressed.get("D") &&
+				!keyInput.haveKeyPressed.get("ENTER")) {
 			isMoving = false;
+			attacking = false;
 		}
 	}
 	
 	private void checkDied() {
-		if(this.currentLife <= 0) {
-			System.out.println("Game over");
+		if(this.currentLife <= 0 && gp.gameState == GameState.Continue.state) {
+			gp.stopMusic();
+			
+			gp.gameState = GameState.Menu.state;
+			gp.ui.titleScreenState = 0;
+			gp.ui.titleScreen = "Game Over";
+			gp.playSoundEffect(8);
+			gp.canPlay = false;
+		}
+	}
+	
+	private void executeAttack() {
+		// Good for attack speed
+		int min = 5; // 5
+		int max = 25; // 25
+		if (attacking) {
+			isMoving = false;
+			spriteCounter++;
+			if (spriteCounter <= min) {
+				spriteNum = 1;
+			}
+			if (spriteCounter > min && spriteCounter <= max) {
+				spriteNum = 2;
+				
+				Rectangle attackArea = new Rectangle((int) worldPosition.x, (int) worldPosition.y, solidArea.width, solidArea.height);
+				int attackRange = 1;
+				
+				switch (direction) {
+				case "up": worldPosition.y -= (attackArea.height * attackRange); break;
+				case "down": worldPosition.y += (attackArea.height * attackRange); break;
+				case "left": worldPosition.x -= (attackArea.width * attackRange); break;
+				case "right": worldPosition.x += (attackArea.width * attackRange); break;
+				}
+				
+				solidArea.width = attackArea.width;
+				solidArea.height = attackArea.height;
+				
+				int entityIndex = gp.collisionHandler.collideEntity(this, gp.monsters);
+				if ((max + min) / 2 == spriteCounter) {
+					damageMonster(entityIndex);
+				}
+				
+				worldPosition.x = attackArea.x;
+				worldPosition.y = attackArea.y;
+				solidArea.width = attackArea.width;
+				solidArea.height = attackArea.height;
+				
+			}
+			if (spriteCounter > max) {
+				spriteNum = 1;
+				spriteCounter = 0;
+				attacking = false;
+				keyInput.haveKeyPressed.replace("ENTER", false);
+			}
 		}
 	}
 	
@@ -92,6 +151,7 @@ public class Player extends Entity {
 	protected void startMove() {
 		checkDied();
 		plugController();
+		executeAttack();
 		gp.eventHandler.checkEvent();
 		int objectIndex = gp.collisionHandler.collideObject(this, true);
 		try{
@@ -106,7 +166,6 @@ public class Player extends Entity {
 			System.out.println("Not initialized. " + this.getClass().getName());
 		}
 		pickUpObject(objectIndex);
-		System.out.println("Is Invincible: " + invincible + " at " + invincibleCount);
 		return;
 	}
 	
@@ -119,11 +178,14 @@ public class Player extends Entity {
 		switch(objectCode) {
 		case "Key":
 			gp.ui.currentDialogue = "You obtained a " + objectCode;
+			gp.playSoundEffect(7);
 			gp.gameState = GameState.Dialogue.state;
+			this.keyCount++;
 			gp.itemObjects[index] = null;
 			break;
 		case "Boots":
 			gp.ui.currentDialogue = "You obtained a " + objectCode;
+			gp.playSoundEffect(7);
 			gp.gameState = GameState.Dialogue.state;
 			gp.itemObjects[index] = null;
 			break;
@@ -131,87 +193,152 @@ public class Player extends Entity {
 	}
 	
 	public void interactEntity(int index, Entity[] entities) {
-		if(index == 999) {
-			return;
-		};
-		if(index != 999  && (keyInput.haveKeyPressed.get("ENTER"))) {
-			Entity entity = entities[index];
-			entity.trigger();
-			switch (entity.name) {
-			case "Green Slime":
-				break;
-			case "Door":
-				gp.gameState = GameState.Dialogue.state;
-				entity.trigger();
-				entity = null;
-				break;
-			case "NPC":
-				gp.gameState = GameState.Dialogue.state;
-				break;
+		if (keyInput.haveKeyPressed.get("ENTER")) {
+			if(index != 999) {
+				attacking = false;
+				Entity entity = entities[index];
+				switch (entity.name) {
+				case "Door":
+					if(this.keyCount > 0) {
+						gp.ui.currentDialogue = "You unlocked the door.";
+						gp.gameState = GameState.Dialogue.state;
+						entity.trigger();
+						entities[index] = null;
+						gp.playSoundEffect(3);
+						keyCount--;
+					} else {
+						gp.ui.currentDialogue = "Locked Door. You need 1 key\nto open this door.";
+						gp.gameState = GameState.Dialogue.state;
+					}
+					break;
+				case "NPC":
+					gp.gameState = GameState.Dialogue.state;
+					// FLIP Dialogue of NPCs
+//					gp.ui.currentDialogue = entity.dialogues[dialogueIndex];
+//					entity.dialogueIndex++;
+//					dialogueIndex %= 3;
+					System.out.println(dialogueIndex);
+					gp.playSoundEffect(6);
+					break;
+				}
+				keyInput.haveKeyPressed.replace("ENTER", false);
+			} else {
+				attacking = true;
+				return;
 			}
 		}
-		keyInput.haveKeyPressed.replace("ENTER", false);	
 	}
 	
 	public void contactMonster(int index) {
 		if (index == 999) return;
 		if(!invincible) {
 			currentLife -= 1;
+			gp.playSoundEffect(5);
 			invincible = true;
 		}
 	}
 	
+	public void damageMonster(int index) {
+		if (index == 999) {
+			System.out.println("Miss");
+			return;
+		}
+		
+		Entity entity = gp.monsters[index];
+		if(!entity.invincible) {
+			if(entity.currentLife <= 0) {
+				gp.monsters[index] = null;
+			}
+			System.out.println("HP :" + entity.currentLife);
+			entity.currentLife--;
+			gp.playSoundEffect(4);
+			entity.invincible = true;
+		}
+		
+		
+	}
+	
 	@Override
 	protected void getSprite() {
-		up1 = loadSprite("player\\boy_up_1.png");
-		up2 = loadSprite("player\\boy_up_2.png");
-		down1 = loadSprite("player\\boy_down_1.png");
-		down2 = loadSprite("player\\boy_down_2.png");
-		right1 = loadSprite("player\\boy_right_1.png");
-		right2 = loadSprite("player\\boy_right_2.png");
-		left1 = loadSprite("player\\boy_left_1.png");
-		left2 = loadSprite("player\\boy_left_2.png");
+		getAttackSprites();
+		getMoveSprites();
+		
+	}
+	
+	private void getAttackSprites() {
+		attack_up1 = loadSprite("player\\attack\\boy_attack_up_1.png", gp.tileSize, gp.tileSize * 2);
+		attack_up2 = loadSprite("player\\attack\\boy_attack_up_2.png", gp.tileSize, gp.tileSize * 2);
+		attack_down1 = loadSprite("player\\attack\\boy_attack_down_1.png", gp.tileSize, gp.tileSize * 2);
+		attack_down2 = loadSprite("player\\attack\\boy_attack_down_2.png", gp.tileSize, gp.tileSize * 2);
+		attack_right1 = loadSprite("player\\attack\\boy_attack_right_1.png", gp.tileSize * 2, gp.tileSize);
+		attack_right2 = loadSprite("player\\attack\\boy_attack_right_2.png", gp.tileSize * 2, gp.tileSize);
+		attack_left1 = loadSprite("player\\attack\\boy_attack_left_1.png", gp.tileSize * 2, gp.tileSize);
+		attack_left2 = loadSprite("player\\attack\\boy_attack_left_2.png", gp.tileSize * 2, gp.tileSize);
+	}
+	
+	private void getMoveSprites() {
+		up1 = loadSprite("player\\move\\boy_up_1.png", gp.tileSize, gp.tileSize);
+		up2 = loadSprite("player\\move\\boy_up_2.png", gp.tileSize, gp.tileSize);
+		down1 = loadSprite("player\\move\\boy_down_1.png", gp.tileSize, gp.tileSize);
+		down2 = loadSprite("player\\move\\boy_down_2.png", gp.tileSize, gp.tileSize);
+		right1 = loadSprite("player\\move\\boy_right_1.png", gp.tileSize, gp.tileSize);
+		right2 = loadSprite("player\\move\\boy_right_2.png", gp.tileSize, gp.tileSize);
+		left1 = loadSprite("player\\move\\boy_left_1.png", gp.tileSize, gp.tileSize);
+		left2 = loadSprite("player\\move\\boy_left_2.png", gp.tileSize, gp.tileSize);
 	}
 	
 	public void draw(Graphics2D g) {
-		BufferedImage image = null;
+		image = null;
+		Vector2D tempScreen = new Vector2D(screen.x, screen.y);
 		
 		switch(direction) {
-			case "up":
-				if (spriteNum == 1) {
-					image = up1;
-				}
-				if (spriteNum == 2) {
-					image = up2;
-				}
-				break;
-			case "down":
-				if (spriteNum == 1) {
-					image = down1;
-				}
-				if (spriteNum == 2) {
-					image = down2;
-				}
-				break;
-			case "right":
-				if (spriteNum == 1) {
-					image = right1;
-				}
-				if (spriteNum == 2) {
-					image = right2;
-				}
-				break;
-			case "left":
-				if (spriteNum == 1) {
-					image = left1;
-				}
-				if (spriteNum == 2) {
-					image = left2;
-				}
-				break;
+		case "up":
+			if (!attacking) {
+				if (spriteNum == 1) image = up1;
+				if (spriteNum == 2) image = up2;
+			}
+			if (attacking) {
+				tempScreen.y = screen.y - gp.tileSize;
+				if (spriteNum == 1) image = attack_up1;
+				if (spriteNum == 2) image = attack_up2;
+			}
+			break;
+		case "down":
+			if (!attacking) {
+				if (spriteNum == 1) image = down1;
+				if (spriteNum == 2) image = down2;
+			}
+			if (attacking) {
+				if (spriteNum == 1) image = attack_down1;
+				if (spriteNum == 2) image = attack_down2;
+			}
+			break;
+		case "right":
+			if (!attacking) {
+				if (spriteNum == 1) image = right1;
+				if (spriteNum == 2) image = right2;
+			}
+			if (attacking) {
+				if (spriteNum == 1) image = attack_right1;
+				if (spriteNum == 2) image = attack_right2;
+			}
+			break;
+		case "left":
+			if (!attacking) {
+				if (spriteNum == 1) image = left1;
+				if (spriteNum == 2) image = left2;
+			}
+			if (attacking) {
+				tempScreen.x = screen.x - gp.tileSize;
+				if (spriteNum == 1) image = attack_left1;
+				if (spriteNum == 2) image = attack_left2;
+			}
+			break;
+		default:
+			break;
 		}
 		if (invincible && invincibleCount % 5 == 0) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
-		g.drawImage(image, (int) screen.x, (int) screen.y, null);
+		g.drawImage(image, (int) tempScreen.x, (int) tempScreen.y, null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 	}
 

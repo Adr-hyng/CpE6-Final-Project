@@ -5,6 +5,8 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.adrian.entity.Entity;
+import com.adrian.entity.Player;
 import com.adrian.user_interface.GamePanel;
 import com.adrian.user_interface.GameState;
 
@@ -44,7 +46,7 @@ public class KeyHandler implements KeyListener{
 				}
 				
 				if(code == KeyEvent.VK_ENTER) {
-					if(gp.ui.selectionY + 1 == GameState.Continue.state) {
+					if(gp.ui.selectionY + 1 == GameState.Continue.state && gp.canPlay) {
 						try{
 							gp.loadGame(gp.player, 1);
 						} catch (Exception ex) {
@@ -80,12 +82,16 @@ public class KeyHandler implements KeyListener{
 				if(code == KeyEvent.VK_ENTER) {
 					if(gp.ui.selectionY == 0) {
 						gp.playMusic(0);
+						gp.player.maxLife = 12;
+						gp.player.currentLife = gp.player.maxLife;
 						gp.newGame(gp.player, 1);
 						gp.gameState = GameState.Continue.state;
 					}
 					
 					else if(gp.ui.selectionY == 1) {
 						gp.playMusic(0);
+						gp.player.maxLife = 6;
+						gp.player.currentLife = gp.player.maxLife;
 						gp.newGame(gp.player, 1);
 						gp.gameState = GameState.Continue.state;
 					}
@@ -99,21 +105,23 @@ public class KeyHandler implements KeyListener{
 		}
 		
 		else if (gp.gameState == GameState.Continue.state) {
-			if(code == KeyEvent.VK_W) {
-				haveKeyPressed.replace("W", true);
-			}
-			if(code == KeyEvent.VK_S) {
-				haveKeyPressed.replace("S", true);
-			}
-			if(code == KeyEvent.VK_A) {
-				haveKeyPressed.replace("A", true);
-			}
-			if(code == KeyEvent.VK_D) {
-				haveKeyPressed.replace("D", true);
-			}
-			
-			if(code == KeyEvent.VK_ENTER) {
-				haveKeyPressed.replace("ENTER", true);
+			if(!gp.player.attacking) {
+				if(code == KeyEvent.VK_W) {
+					haveKeyPressed.replace("W", true);
+				}
+				if(code == KeyEvent.VK_S) {
+					haveKeyPressed.replace("S", true);
+				}
+				if(code == KeyEvent.VK_A) {
+					haveKeyPressed.replace("A", true);
+				}
+				if(code == KeyEvent.VK_D) {
+					haveKeyPressed.replace("D", true);
+				}
+				
+				if(code == KeyEvent.VK_ENTER && !gp.player.isMoving) {
+					haveKeyPressed.replace("ENTER", true);
+				}
 			}
 			
 			if(code == KeyEvent.VK_SPACE) {
@@ -161,9 +169,9 @@ public class KeyHandler implements KeyListener{
 			haveKeyPressed.replace("D", false);
 		}
 		
-		if(code == KeyEvent.VK_ENTER) {
-			haveKeyPressed.replace("ENTER", false);
-		}
+//		if(code == KeyEvent.VK_ENTER) {
+//			haveKeyPressed.replace("ENTER", false);
+//		}
 
 		if(code == KeyEvent.VK_SPACE) {
 			haveKeyPressed.replace("SPACE", false);

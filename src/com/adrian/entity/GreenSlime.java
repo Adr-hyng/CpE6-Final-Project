@@ -23,14 +23,14 @@ public class GreenSlime extends Entity{
 
 	@Override
 	protected void getSprite() {
-		up1 = this.loadSprite("monster\\greenslime_down_1.png");
-		up2 = this.loadSprite("monster\\greenslime_down_2.png");
-		down1 = this.loadSprite("monster\\greenslime_down_1.png");
-		down2 = this.loadSprite("monster\\greenslime_down_2.png");
-		left1 = this.loadSprite("monster\\greenslime_down_1.png");
-		left2 = this.loadSprite("monster\\greenslime_down_2.png");
-		right1 = this.loadSprite("monster\\greenslime_down_1.png");
-		right2 = this.loadSprite("monster\\greenslime_down_2.png");
+		up1 = this.loadSprite("monster\\greenslime_down_1.png", gp.tileSize, gp.tileSize);
+		up2 = this.loadSprite("monster\\greenslime_down_2.png", gp.tileSize, gp.tileSize);
+		down1 = this.loadSprite("monster\\greenslime_down_1.png", gp.tileSize, gp.tileSize);
+		down2 = this.loadSprite("monster\\greenslime_down_2.png", gp.tileSize, gp.tileSize);
+		left1 = this.loadSprite("monster\\greenslime_down_1.png", gp.tileSize, gp.tileSize);
+		left2 = this.loadSprite("monster\\greenslime_down_2.png", gp.tileSize, gp.tileSize);
+		right1 = this.loadSprite("monster\\greenslime_down_1.png", gp.tileSize, gp.tileSize);
+		right2 = this.loadSprite("monster\\greenslime_down_2.png", gp.tileSize, gp.tileSize);
 	}
 	@Override
 	protected void startMove() {
