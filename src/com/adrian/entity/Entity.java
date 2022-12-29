@@ -59,7 +59,6 @@ public abstract class Entity {
 	}
 	
 	protected abstract void getSprite();
-	
 	protected BufferedImage loadSprite(final String imagePath, int width, int height) {
 		image = null;
 		try {
@@ -70,11 +69,10 @@ public abstract class Entity {
 		}
 		return image;
 	}
-	
-	public abstract void trigger();
-	
+	protected void setDialogue() {}
+	protected void setDialogue(String text) {}
+	protected void trigger() {}
 	protected void startMove() {}
-	
 	protected void contactPlayer() {
 		boolean contactPlayer = gp.collisionHandler.collidePlayer(this);
 		if (this.type == 2 && contactPlayer == true) {
@@ -82,6 +80,14 @@ public abstract class Entity {
 				gp.player.currentLife --;
 				gp.player.invincible = true;
 			}
+		}
+	}
+	
+	public void takeDamage(int damageTaken) {
+		if(!this.invincible) {
+			this.currentLife -= damageTaken;
+			gp.playSoundEffect(4);
+			this.invincible = true;
 		}
 	}
 	
@@ -113,7 +119,6 @@ public abstract class Entity {
 		
 		// Sprite Animation Moving
 		if( ((this.worldPosition.x - currentX) == 0) && ((this.worldPosition.y - currentY) == 0)) {
-//			spriteNum = 1;
 		}
 		else {
 			

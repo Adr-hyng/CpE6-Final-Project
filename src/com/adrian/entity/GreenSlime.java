@@ -64,9 +64,4 @@ public class GreenSlime extends Entity{
 		}
 	}
 
-	@Override
-	public void trigger() {
-		// TODO Auto-generated method stub
-		
-	}
 }

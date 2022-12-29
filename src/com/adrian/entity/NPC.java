@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.util.Random;
 
 import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interface.GameState;
 
 public class NPC extends Entity{
 	public NPC(GamePanel gp, String[] dialogues) {
@@ -47,6 +48,14 @@ public class NPC extends Entity{
 			direction = "left";
 			break;
 		}
+	}
+	
+	public void setDialogue() {
+		gp.gameState = GameState.Dialogue.state;
+		gp.ui.currentDialogue = this.dialogues[this.dialogueIndex];
+		this.dialogueIndex++;
+		this.dialogueIndex %= this.dialogues.length;
+		gp.playSoundEffect(6);
 	}
 	
 	protected void startMove() {

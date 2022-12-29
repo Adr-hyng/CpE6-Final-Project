@@ -15,9 +15,4 @@ public class Chest extends Entity {
 		image = this.loadSprite("objects\\chest.png", gp.tileSize, gp.tileSize);
 	}
 
-	@Override
-	public void trigger() {
-		// TODO Auto-generated method stub
-		
-	}
 }

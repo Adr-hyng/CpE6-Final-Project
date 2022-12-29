@@ -141,7 +141,6 @@ public class GamePanel extends JPanel implements Runnable {
 	public void newGame(Entity entity, int index) {
 		try {
 			connectDB();
-			Player player = new Player(this, keyInput, new Vector2D(respawnX, respawnY));
 			db.updateDB(respawnX, "entity", "x", index);
 			db.updateDB(respawnY, "entity", "y", index);
 			db.updateDB(entity.currentLife, "entity", "hp", index);

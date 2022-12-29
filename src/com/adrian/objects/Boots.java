@@ -1,10 +1,9 @@
 package com.adrian.objects;
 
 import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interface.GameState;
 
 public class Boots extends ItemObject {
-	public String name;
-
 	public Boots(GamePanel gp) {
 		super(gp);
 		this.name = "Boots";
@@ -13,5 +12,11 @@ public class Boots extends ItemObject {
 
 	protected void getSprite() {
 		this.image = this.loadSprite("objects\\boots.png");
+	}
+	
+	public void setDialogue () {
+		gp.ui.currentDialogue = "You obtained a " + this.name;
+		gp.playSoundEffect(7);
+		gp.gameState = GameState.Dialogue.state;
 	}
 }

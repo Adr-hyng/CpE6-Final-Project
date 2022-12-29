@@ -26,8 +26,6 @@ public class Player extends Entity {
 		this.gp = gp;
 		this.keyInput = keyInput;
 		
-		
-		
 		// Default Values
 		this.worldPosition = position;
 		this.movementSpeed = 4;
@@ -89,10 +87,9 @@ public class Player extends Entity {
 		}
 	}
 	
-	private void checkDied() {
+	private void gameOver() {
 		if(this.currentLife <= 0 && gp.gameState == GameState.Continue.state) {
 			gp.stopMusic();
-			
 			gp.gameState = GameState.Menu.state;
 			gp.ui.titleScreenState = 0;
 			gp.ui.titleScreen = "Game Over";
@@ -128,9 +125,7 @@ public class Player extends Entity {
 				solidArea.height = attackArea.height;
 				
 				int entityIndex = gp.collisionHandler.collideEntity(this, gp.monsters);
-				if ((max + min) / 2 == spriteCounter) {
-					damageMonster(entityIndex);
-				}
+				if ((max + min) / 2 == spriteCounter) getDamageFromMonster(entityIndex);
 				
 				worldPosition.x = attackArea.x;
 				worldPosition.y = attackArea.y;
@@ -147,9 +142,76 @@ public class Player extends Entity {
 		}
 	}
 	
+	private void pickUpObject(int index) {
+		if(index == 999) return;
+		int findIndex = gp.itemObjects[index].getClass().getName().lastIndexOf(".") + 1;
+		String objectCode = gp.itemObjects[index].getClass().getName();
+		objectCode = objectCode.substring(findIndex, objectCode.length());
+		switch(objectCode) {
+		case "Key":
+			gp.itemObjects[index].setDialogue();
+			this.keyCount++;
+			gp.itemObjects[index] = null;
+			break;
+		case "Boots":
+			gp.itemObjects[index].setDialogue();
+			gp.itemObjects[index] = null;
+			break;
+		}
+	}
+	
+	private void interactEntity(int index, Entity[] entities) {
+		if (keyInput.haveKeyPressed.get("ENTER")) {
+			if(index != 999) {
+				attacking = false;
+				Entity entity = entities[index];
+				switch (entity.name) {
+				case "Door":
+					if(this.keyCount > 0) {
+						entity.setDialogue("Unlocked the door.");
+						entity.trigger();
+						entities[index] = null;
+						keyCount--;
+					} else {
+						entity.setDialogue("Locked Door. You need 1 key\nto open this door.");
+					}
+					entity.trigger();
+					break;
+				case "NPC":
+					entity.setDialogue();
+					break;
+				}
+				keyInput.haveKeyPressed.replace("ENTER", false);
+			} else {
+				attacking = true;
+				return;
+			}
+		}
+	}
+	
+	protected void contactMonster(int index) {
+		if (index == 999) return;
+		if(!invincible) {
+			currentLife -= 1;
+			gp.playSoundEffect(5);
+			invincible = true;
+		}
+	}
+	
+	private void getDamageFromMonster(int index) {
+		if (index == 999) return;
+		Entity entity = gp.monsters[index];
+		if(entity.currentLife <= 0) gp.monsters[index] = null;
+		switch (entity.name) {
+		case "Green Slime":
+			entity.takeDamage(1);
+			break;
+		}
+	}
+	
 	@Override
 	protected void startMove() {
-		checkDied();
+		gameOver();
 		plugController();
 		executeAttack();
 		gp.eventHandler.checkEvent();
@@ -167,95 +229,6 @@ public class Player extends Entity {
 		}
 		pickUpObject(objectIndex);
 		return;
-	}
-	
-	public void pickUpObject(int index) {
-		if(index == 999) return;
-		// Should
-		int findIndex = gp.itemObjects[index].getClass().getName().lastIndexOf(".") + 1;
-		String objectCode = gp.itemObjects[index].getClass().getName();
-		objectCode = objectCode.substring(findIndex, objectCode.length());
-		switch(objectCode) {
-		case "Key":
-			gp.ui.currentDialogue = "You obtained a " + objectCode;
-			gp.playSoundEffect(7);
-			gp.gameState = GameState.Dialogue.state;
-			this.keyCount++;
-			gp.itemObjects[index] = null;
-			break;
-		case "Boots":
-			gp.ui.currentDialogue = "You obtained a " + objectCode;
-			gp.playSoundEffect(7);
-			gp.gameState = GameState.Dialogue.state;
-			gp.itemObjects[index] = null;
-			break;
-		}
-	}
-	
-	public void interactEntity(int index, Entity[] entities) {
-		if (keyInput.haveKeyPressed.get("ENTER")) {
-			if(index != 999) {
-				attacking = false;
-				Entity entity = entities[index];
-				switch (entity.name) {
-				case "Door":
-					if(this.keyCount > 0) {
-						gp.ui.currentDialogue = "You unlocked the door.";
-						gp.gameState = GameState.Dialogue.state;
-						entity.trigger();
-						entities[index] = null;
-						gp.playSoundEffect(3);
-						keyCount--;
-					} else {
-						gp.ui.currentDialogue = "Locked Door. You need 1 key\nto open this door.";
-						gp.gameState = GameState.Dialogue.state;
-					}
-					break;
-				case "NPC":
-					gp.gameState = GameState.Dialogue.state;
-					// FLIP Dialogue of NPCs
-//					gp.ui.currentDialogue = entity.dialogues[dialogueIndex];
-//					entity.dialogueIndex++;
-//					dialogueIndex %= 3;
-					System.out.println(dialogueIndex);
-					gp.playSoundEffect(6);
-					break;
-				}
-				keyInput.haveKeyPressed.replace("ENTER", false);
-			} else {
-				attacking = true;
-				return;
-			}
-		}
-	}
-	
-	public void contactMonster(int index) {
-		if (index == 999) return;
-		if(!invincible) {
-			currentLife -= 1;
-			gp.playSoundEffect(5);
-			invincible = true;
-		}
-	}
-	
-	public void damageMonster(int index) {
-		if (index == 999) {
-			System.out.println("Miss");
-			return;
-		}
-		
-		Entity entity = gp.monsters[index];
-		if(!entity.invincible) {
-			if(entity.currentLife <= 0) {
-				gp.monsters[index] = null;
-			}
-			System.out.println("HP :" + entity.currentLife);
-			entity.currentLife--;
-			gp.playSoundEffect(4);
-			entity.invincible = true;
-		}
-		
-		
 	}
 	
 	@Override
@@ -340,11 +313,5 @@ public class Player extends Entity {
 		if (invincible && invincibleCount % 5 == 0) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
 		g.drawImage(image, (int) tempScreen.x, (int) tempScreen.y, null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
-	}
-
-	@Override
-	public void trigger() {
-		// TODO Auto-generated method stub
-		
 	}
 }

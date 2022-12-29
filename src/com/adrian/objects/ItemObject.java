@@ -26,6 +26,8 @@ public class ItemObject {
 	public ItemObject(GamePanel gp) {
 		this.gp = gp;
 	}
+	
+	public void setDialogue() {}
 
 	public void draw(Graphics2D g) {
 		Vector2D screenView = new Vector2D(worldPosition.x - gp.player.worldPosition.x + gp.player.screen.x, worldPosition.y - gp.player.worldPosition.y + gp.player.screen.y);

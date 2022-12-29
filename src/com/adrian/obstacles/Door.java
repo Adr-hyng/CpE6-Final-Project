@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 
 import com.adrian.entity.Entity;
 import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interface.GameState;
 
 public class Door extends Entity {
 	public Door(GamePanel gp) {
@@ -23,7 +24,12 @@ public class Door extends Entity {
 		this.image = this.loadSprite("objects\\door.png", gp.tileSize, gp.tileSize);
 	}
 	
-	@Override
+	public void setDialogue(String text) {
+		gp.ui.currentDialogue = text;
+	}
+	
 	public void trigger() {
+		gp.gameState = GameState.Dialogue.state;
+		gp.playSoundEffect(3);
 	}
 }
