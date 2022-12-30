@@ -1,6 +1,6 @@
 package com.adrian.entity;
 
-import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import com.adrian.GlobalTool;
 import com.adrian.user_interface.GamePanel;
+import com.adrian.utils.UtilityTool;
 import com.adrian.utils.Vector2D;
 
 public abstract class Entity {
@@ -23,36 +24,42 @@ public abstract class Entity {
 	public BufferedImage attack_up1, attack_up2, attack_down1, attack_down2, attack_left1, attack_left2, attack_right1, attack_right2;
 	public BufferedImage image;
 	
-	public double movementSpeed;
-	public String direction = "down";
-	public boolean isMoving = false;
 	
-	public boolean attacking = false;
-	public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
-	
-	public String name;
-	public boolean collision = false;
-	public Vector2D worldPosition;
-	
-	public int spriteCounter = 0;
 	public int spriteNum = 1;
-	
-	public int actionLockCounter = 0;
-	public int moveLockCounter = 0;
-	
 	protected String dialogues[] = new String[20];
 	protected int dialogueIndex = 0; 
 	
 	// Character Status
+	public String name;
+	public Vector2D worldPosition;
 	public int maxLife;
 	public int currentLife = 0;
-	public boolean invincible = false;
-	public int invincibleCount = 0;
+	public double movementSpeed;
+	public String direction = "down";
 	public int type;
 	
+	// Counter
+	public int spriteCounter = 0;
+	public int actionLockCounter = 0;
+	public int moveLockCounter = 0;
+	public int invincibleCount = 0;
+	int dyingCounter = 0;
+	int healthBarCounter = 0;
+	
+	// States
+	public boolean invincible = false;
+	public boolean isAlive = true;
+	public boolean isDying = false;
+	public boolean collision = false;
+	public boolean isMoving = false;
+	public boolean attacking = false;
+	public boolean collisionOn = false;
+	public boolean showHealthBar = false;
+	
+	// Collision Rect
+	public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
 	public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 	public int solidAreaDefaultX, solidAreaDefaultY;
-	public boolean collisionOn = false;
 	
 	public Entity(GamePanel gp) {
 		this.gp = gp;
@@ -69,10 +76,16 @@ public abstract class Entity {
 		}
 		return image;
 	}
+	
+	// Set Dialogue Speech to NPC / Obstacles
 	protected void setDialogue() {}
 	protected void setDialogue(String text) {}
+	
+	
 	protected void trigger() {}
+	protected void damageReaction() {}
 	protected void startMove() {}
+	
 	protected void contactPlayer() {
 		boolean contactPlayer = gp.collisionHandler.collidePlayer(this);
 		if (this.type == 2 && contactPlayer == true) {
@@ -121,7 +134,6 @@ public abstract class Entity {
 		if( ((this.worldPosition.x - currentX) == 0) && ((this.worldPosition.y - currentY) == 0)) {
 		}
 		else {
-			
 			spriteCounter++;
 			if(spriteCounter > 10) {
 				if(spriteNum == 1) spriteNum = 2;
@@ -197,9 +209,51 @@ public abstract class Entity {
 			default:
 				break;
 			}
-			if (invincible && invincibleCount % 5 == 0) g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
+			
+			if (type == 2 && showHealthBar) {
+				double oneScale = (double) gp.tileSize / maxLife;
+				double healthBar = oneScale * currentLife;
+				int showSeconds = 4;
+				g2.setColor(new Color(35, 35, 35));
+				g2.fillRect((int) screenView.x - 1, (int) screenView.y - 16, gp.tileSize + 2, 12);
+				
+				g2.setColor(new Color(255, 0, 30));
+				g2.fillRect((int) screenView.x, (int) screenView.y - 15, (int) healthBar, 10);
+				
+				healthBarCounter++;
+				if (healthBarCounter > showSeconds * 60) {
+					healthBarCounter = 0;
+					showHealthBar = false;
+				}
+			}
+			if (invincible && invincibleCount % 5 == 0) {
+				showHealthBar = true;
+				healthBarCounter = 0;
+				GlobalTool.utilityTool.changeAlpha(g2, 0.3f);
+			}
+			if (isDying) {
+				dyingAnimation(g2);
+			}
 			g2.drawImage(image, (int) tempScreen.x, (int) tempScreen.y, null);
-			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
+			GlobalTool.utilityTool.changeAlpha(g2, 1f);
+		}
+	}
+	
+	public void dyingAnimation(Graphics2D g2) {
+		int startInterval = 5;
+		dyingCounter++;
+		if (dyingCounter <= startInterval) GlobalTool.utilityTool.changeAlpha(g2, 0f);
+		if (dyingCounter > startInterval * 1 && dyingCounter <= startInterval * 2) GlobalTool.utilityTool.changeAlpha(g2, 1f);
+		if (dyingCounter > startInterval * 2 && dyingCounter <= startInterval * 3) GlobalTool.utilityTool.changeAlpha(g2, 0f);
+		if (dyingCounter > startInterval * 3 && dyingCounter <= startInterval * 4) GlobalTool.utilityTool.changeAlpha(g2, 1f);
+		if (dyingCounter > startInterval * 4 && dyingCounter <= startInterval * 5) GlobalTool.utilityTool.changeAlpha(g2, 0f);
+		if (dyingCounter > startInterval * 5 && dyingCounter <= startInterval * 6) GlobalTool.utilityTool.changeAlpha(g2, 1f);
+		if (dyingCounter > startInterval * 6 && dyingCounter <= startInterval * 7) GlobalTool.utilityTool.changeAlpha(g2, 0f);
+		if (dyingCounter > startInterval * 7 && dyingCounter <= startInterval * 8) GlobalTool.utilityTool.changeAlpha(g2, 1f);
+		
+		if (dyingCounter > startInterval * 8) {
+			isDying = false;
+			isAlive = false;
 		}
 	}
 }

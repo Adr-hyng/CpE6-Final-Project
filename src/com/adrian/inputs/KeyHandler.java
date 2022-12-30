@@ -81,7 +81,7 @@ public class KeyHandler implements KeyListener{
 				
 				if(code == KeyEvent.VK_ENTER) {
 					if(gp.ui.selectionY == 0) {
-						gp.playMusic(0);
+//						gp.playMusic(0);
 						gp.player.maxLife = 12;
 						gp.player.currentLife = gp.player.maxLife;
 						gp.newGame(gp.player, 1);
@@ -89,7 +89,7 @@ public class KeyHandler implements KeyListener{
 					}
 					
 					else if(gp.ui.selectionY == 1) {
-						gp.playMusic(0);
+//						gp.playMusic(0);
 						gp.player.maxLife = 6;
 						gp.player.currentLife = gp.player.maxLife;
 						gp.newGame(gp.player, 1);

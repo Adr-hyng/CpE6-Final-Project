@@ -33,7 +33,7 @@ public class NPC extends Entity{
 	public void trigger() {
 		if(dialogues[dialogueIndex] == null) dialogueIndex = 0;
 		gp.ui.currentDialogue = dialogues[dialogueIndex];
-		dialogueIndex++;
+		dialogueIndex = (dialogueIndex + 1 ) % dialogues.length;
 		switch(gp.player.direction) {
 		case "up":
 			direction = "down";
@@ -52,9 +52,6 @@ public class NPC extends Entity{
 	
 	public void setDialogue() {
 		gp.gameState = GameState.Dialogue.state;
-		gp.ui.currentDialogue = this.dialogues[this.dialogueIndex];
-		this.dialogueIndex++;
-		this.dialogueIndex %= this.dialogues.length;
 		gp.playSoundEffect(6);
 	}
 	

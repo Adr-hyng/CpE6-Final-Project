@@ -30,7 +30,6 @@ public class Main {
 			public void windowClosing(WindowEvent evt) {
 				try {
 					gamePanel.saveGame(gamePanel.player);
-					
 				} catch (NumberFormatException e) {
 					e.printStackTrace();
 				}

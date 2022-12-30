@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import com.adrian.inputs.KeyHandler;
+import com.adrian.objects.ItemObject;
 import com.adrian.user_interface.GamePanel;
 import com.adrian.user_interface.GameState;
 import com.adrian.utils.Vector2D;
@@ -144,17 +145,15 @@ public class Player extends Entity {
 	
 	private void pickUpObject(int index) {
 		if(index == 999) return;
-		int findIndex = gp.itemObjects[index].getClass().getName().lastIndexOf(".") + 1;
-		String objectCode = gp.itemObjects[index].getClass().getName();
-		objectCode = objectCode.substring(findIndex, objectCode.length());
-		switch(objectCode) {
+		ItemObject obtainedItem = gp.itemObjects[index];
+		switch(obtainedItem.name) {
 		case "Key":
-			gp.itemObjects[index].setDialogue();
+			obtainedItem.setDialogue();
 			this.keyCount++;
 			gp.itemObjects[index] = null;
 			break;
 		case "Boots":
-			gp.itemObjects[index].setDialogue();
+			obtainedItem.setDialogue();
 			gp.itemObjects[index] = null;
 			break;
 		}
@@ -169,7 +168,6 @@ public class Player extends Entity {
 				case "Door":
 					if(this.keyCount > 0) {
 						entity.setDialogue("Unlocked the door.");
-						entity.trigger();
 						entities[index] = null;
 						keyCount--;
 					} else {
@@ -179,6 +177,7 @@ public class Player extends Entity {
 					break;
 				case "NPC":
 					entity.setDialogue();
+					entity.trigger();
 					break;
 				}
 				keyInput.haveKeyPressed.replace("ENTER", false);
@@ -201,12 +200,14 @@ public class Player extends Entity {
 	private void getDamageFromMonster(int index) {
 		if (index == 999) return;
 		Entity entity = gp.monsters[index];
-		if(entity.currentLife <= 0) gp.monsters[index] = null;
 		switch (entity.name) {
 		case "Green Slime":
 			entity.takeDamage(1);
+			entity.damageReaction();
 			break;
 		}
+		if(entity.currentLife <= 0) gp.monsters[index].isDying = true;
+		
 	}
 	
 	@Override
