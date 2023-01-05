@@ -11,7 +11,6 @@ import javax.imageio.ImageIO;
 
 import com.adrian.GlobalTool;
 import com.adrian.user_interface.GamePanel;
-import com.adrian.utils.UtilityTool;
 import com.adrian.utils.Vector2D;
 
 public abstract class Entity {

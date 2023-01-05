@@ -9,6 +9,10 @@ import com.adrian.objects.ItemObject;
 import com.adrian.user_interface.GamePanel;
 import com.adrian.user_interface.GameState;
 import com.adrian.utils.Vector2D;
+import com.adrian.weapon.CommonSword;
+import com.adrian.weapon.Shield;
+import com.adrian.weapon.Weapon;
+import com.adrian.weapon.WoodenShield;
 
 public class Player extends Entity {
 	
@@ -18,6 +22,18 @@ public class Player extends Entity {
 	public Vector2D screen;
 	public int keyCount = 0;
 	
+	// Character Attributes
+	public int level;
+	public int strength;
+	public int dexterity;
+	public int attack;
+	public int defense;
+	public int exp;
+	public int nextLevelExp;
+	public int coin;
+	public Weapon currentWeapon;
+	public Shield currentShield;
+	
 	public Player(GamePanel gp, KeyHandler keyInput, Vector2D position) {
 		super(gp);
 		this.screen = new Vector2D(
@@ -26,20 +42,44 @@ public class Player extends Entity {
 		
 		this.gp = gp;
 		this.keyInput = keyInput;
+		this.worldPosition = position;
 		
 		// Default Values
-		this.worldPosition = position;
-		this.movementSpeed = 4;
-		
-		this.maxLife = 6;
-		this.currentLife = maxLife;
-		this.direction = "down";
-		this.attackArea = new Rectangle(0, 0, 36, 36);
+		this.defaultValue();
 		
 		this.solidArea = new Rectangle(8, 16, 28, 28); // IMPROVEMENT: Use percentage to calculate the rect for responsiveness.
 		solidAreaDefaultX = this.solidArea.x;
 		solidAreaDefaultY = this.solidArea.y;
 		this.getSprite();
+	}
+	
+	private void defaultValue() {
+		this.movementSpeed = 4;
+		this.maxLife = 6;
+		this.currentLife = maxLife;
+		this.direction = "down";
+		this.attackArea = new Rectangle(0, 0, 36, 36);
+		
+		this.level = 1;
+		this.strength = 1;
+		this.dexterity = 1;
+		this.exp = 0;
+		this.nextLevelExp = 5;
+		this.coin = 0;
+		this.currentWeapon = new CommonSword(gp);
+		this.currentShield = new WoodenShield(gp);
+		this.attack = getAttackStat();
+		this.defense = getDefenseStat();
+	}
+	
+	
+	// PUT THIS SOMEWHERE ELSE like PlayerStats Manager
+	private int getAttackStat() {
+		return attack = strength * currentWeapon.attackValue;
+	}
+	
+	private int getDefenseStat() {
+		return attack = dexterity * currentShield.defenseValue;
 	}
 	
 	private void plugController() {
@@ -311,6 +351,7 @@ public class Player extends Entity {
 		default:
 			break;
 		}
+		
 		if (invincible && invincibleCount % 5 == 0) g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
 		g.drawImage(image, (int) tempScreen.x, (int) tempScreen.y, null);
 		g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
