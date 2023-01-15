@@ -6,7 +6,7 @@ public class CommonSword extends Weapon{
 	public CommonSword(GamePanel gp) {
 		super(gp);
 		this.name = "Normal Sword";
-		this.attackValue = 1;
+		this.attackValue = 5;
 		this.getSprite();
 	}
 

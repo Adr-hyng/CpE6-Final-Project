@@ -26,6 +26,7 @@ public class Sound {
 				soundURL[6] = new File(GlobalTool.assetsDirectory + "sounds\\speak.wav").toURI().toURL();
 				soundURL[7] = new File(GlobalTool.assetsDirectory + "sounds\\levelup.wav").toURI().toURL();
 				soundURL[8] = new File(GlobalTool.assetsDirectory + "sounds\\gameover.wav").toURI().toURL();
+				soundURL[9] = new File(GlobalTool.assetsDirectory + "sounds\\obtained_item.wav").toURI().toURL();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}

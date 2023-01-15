@@ -19,16 +19,14 @@ public abstract class Entity {
 	
 	public GamePanel gp;
 	
-	public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
-	public BufferedImage attack_up1, attack_up2, attack_down1, attack_down2, attack_left1, attack_left2, attack_right1, attack_right2;
+	protected BufferedImage up1, up2, down1, down2, left1, left2, right1, right2;
+	protected BufferedImage attack_up1, attack_up2, attack_down1, attack_down2, attack_left1, attack_left2, attack_right1, attack_right2;
+	protected int spriteNum = 1;
 	public BufferedImage image;
 	
-	
-	public int spriteNum = 1;
 	protected String dialogues[] = new String[20];
 	protected int dialogueIndex = 0; 
 	
-	// Character Status
 	public String name;
 	public Vector2D worldPosition;
 	public int maxLife;
@@ -36,6 +34,16 @@ public abstract class Entity {
 	public double movementSpeed;
 	public String direction = "down";
 	public int type;
+	
+	// Attributes
+	public int level;
+	public int strength;
+	public int dexterity;
+	public int attack;
+	public int defense;
+	public int exp;
+	public int nextLevelExp;
+	public int coin;
 	
 	// Counter
 	public int spriteCounter = 0;
@@ -55,8 +63,9 @@ public abstract class Entity {
 	public boolean collisionOn = false;
 	public boolean showHealthBar = false;
 	
-	// Collision Rect
 	public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
+	
+	// Collision Rect
 	public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 	public int solidAreaDefaultX, solidAreaDefaultY;
 	
@@ -76,11 +85,12 @@ public abstract class Entity {
 		return image;
 	}
 	
+	// STAY
 	// Set Dialogue Speech to NPC / Obstacles
 	protected void setDialogue() {}
 	protected void setDialogue(String text) {}
 	
-	
+	// STAY
 	protected void trigger() {}
 	protected void damageReaction() {}
 	protected void startMove() {}
@@ -97,6 +107,9 @@ public abstract class Entity {
 	
 	public void takeDamage(int damageTaken) {
 		if(!this.invincible) {
+			damageTaken = damageTaken - this.defense;
+			damageTaken = (damageTaken < 0) ? 0 : damageTaken;
+			gp.ui.addMessage(damageTaken + " damage!");
 			this.currentLife -= damageTaken;
 			gp.playSoundEffect(4);
 			this.invincible = true;

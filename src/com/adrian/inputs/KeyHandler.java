@@ -19,7 +19,6 @@ public class KeyHandler implements KeyListener{
 		put("D", false);
 		put("ENTER", false);
 		put("SPACE", false);
-		put("T", false); // Test
 		put("ESC", false);
 	}};
 	
@@ -100,18 +99,20 @@ public class KeyHandler implements KeyListener{
 			
 			if(code == KeyEvent.VK_ENTER) {
 				if(gp.ui.selectionY == 0) {
-//					gp.playMusic(0);
+					// MUSIC
+					gp.playMusic(0);
+					gp.newGame(gp.player, 1);
 					gp.player.maxLife = 12;
 					gp.player.currentLife = gp.player.maxLife;
-					gp.newGame(gp.player, 1);
 					gp.gameState = GameState.Continue.state;
 				}
 				
 				else if(gp.ui.selectionY == 1) {
-//					gp.playMusic(0);
+					// MUSIC
+					gp.playMusic(0);
+					gp.newGame(gp.player, 1);
 					gp.player.maxLife = 6;
 					gp.player.currentLife = gp.player.maxLife;
-					gp.newGame(gp.player, 1);
 					gp.gameState = GameState.Continue.state;
 				}
 				
@@ -154,11 +155,6 @@ public class KeyHandler implements KeyListener{
 		if(code == KeyEvent.VK_P) {
 			gp.gameState = GameState.Pause.state;
 		}
-		
-		// DEBUG
-		if(code == KeyEvent.VK_T) {
-			haveKeyPressed.replace("T", true);
-		}
 	}
 	
 	private void pauseState(int code) {
@@ -197,20 +193,12 @@ public class KeyHandler implements KeyListener{
 			haveKeyPressed.replace("D", false);
 		}
 		
-//		if(code == KeyEvent.VK_ENTER) {
-//			haveKeyPressed.replace("ENTER", false);
-//		}
-
 		if(code == KeyEvent.VK_SPACE) {
 			haveKeyPressed.replace("SPACE", false);
 		}
 		
 		if(code == KeyEvent.VK_ESCAPE) {
 			haveKeyPressed.replace("ESC", false);
-		}
-		
-		if(code == KeyEvent.VK_T) {
-			haveKeyPressed.replace("T", false);
 		}
 	}
 }

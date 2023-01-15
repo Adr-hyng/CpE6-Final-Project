@@ -11,9 +11,12 @@ public class GreenSlime extends Entity{
 		
 		name = "Green Slime";
 		movementSpeed = 1;
-		maxLife = 20;
+		maxLife = 5;
 		currentLife = maxLife;
 		type =  2;
+		attack = 2;
+		defense = 0;
+		exp = 5;
 		
 		solidArea = new Rectangle(3, 18, 42, 30);
 		solidAreaDefaultX = solidArea.x;

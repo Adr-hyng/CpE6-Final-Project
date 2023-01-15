@@ -30,6 +30,5 @@ public class Door extends Entity {
 	
 	public void trigger() {
 		gp.gameState = GameState.Dialogue.state;
-		gp.playSoundEffect(3);
 	}
 }

@@ -23,14 +23,6 @@ public class Player extends Entity {
 	public int keyCount = 0;
 	
 	// Character Attributes
-	public int level;
-	public int strength;
-	public int dexterity;
-	public int attack;
-	public int defense;
-	public int exp;
-	public int nextLevelExp;
-	public int coin;
 	public Weapon currentWeapon;
 	public Shield currentShield;
 	
@@ -46,14 +38,14 @@ public class Player extends Entity {
 		
 		// Default Values
 		this.defaultValue();
-		
+ 		
 		this.solidArea = new Rectangle(8, 16, 28, 28); // IMPROVEMENT: Use percentage to calculate the rect for responsiveness.
 		solidAreaDefaultX = this.solidArea.x;
 		solidAreaDefaultY = this.solidArea.y;
 		this.getSprite();
 	}
 	
-	private void defaultValue() {
+	public void defaultValue() {
 		this.movementSpeed = 4;
 		this.maxLife = 6;
 		this.currentLife = maxLife;
@@ -79,7 +71,23 @@ public class Player extends Entity {
 	}
 	
 	private int getDefenseStat() {
-		return attack = dexterity * currentShield.defenseValue;
+		return defense = dexterity * currentShield.defenseValue;
+	}
+	
+	private void checkLevelUp() {
+		if(exp >= nextLevelExp) {
+			level++;
+			nextLevelExp *= 2;
+			maxLife += 2;
+			strength++;
+			dexterity++;
+			attack = getAttackStat();
+			defense = getDefenseStat();
+			gp.playSoundEffect(7);
+			
+			gp.gameState = GameState.Dialogue.state;
+			gp.ui.currentDialogue = "\tYou are level " + this.level + " now!";
+		}
 	}
 	
 	private void plugController() {
@@ -207,10 +215,12 @@ public class Player extends Entity {
 				switch (entity.name) {
 				case "Door":
 					if(this.keyCount > 0) {
+						gp.playSoundEffect(3);
 						entity.setDialogue("Unlocked the door.");
 						entities[index] = null;
 						keyCount--;
 					} else {
+						gp.playSoundEffect(6);
 						entity.setDialogue("Locked Door. You need 1 key\nto open this door.");
 					}
 					entity.trigger();
@@ -230,24 +240,35 @@ public class Player extends Entity {
 	
 	protected void contactMonster(int index) {
 		if (index == 999) return;
-		if(!invincible) {
-			currentLife -= 1;
-			gp.playSoundEffect(5);
-			invincible = true;
+		Entity entity = gp.monsters[index];
+		if(!invincible && !entity.invincible) {
+			switch (entity.name) {
+			case "Green Slime":
+				this.takeDamage(entity.attack);
+				gp.playSoundEffect(5);
+				invincible = true;
+				break;
+			}
 		}
 	}
 	
 	private void getDamageFromMonster(int index) {
 		if (index == 999) return;
 		Entity entity = gp.monsters[index];
+		
 		switch (entity.name) {
 		case "Green Slime":
-			entity.takeDamage(1);
+			entity.takeDamage(this.attack);
 			entity.damageReaction();
 			break;
 		}
-		if(entity.currentLife <= 0) gp.monsters[index].isDying = true;
-		
+		if(entity.currentLife <= 0) {
+			gp.monsters[index].isDying = true;
+			gp.ui.addMessage("killed the " + gp.monsters[index].name + "!");
+			gp.ui.addMessage("Gained " + gp.monsters[index].exp + " exp!");
+			exp += entity.exp;
+			checkLevelUp();
+		}
 	}
 	
 	@Override

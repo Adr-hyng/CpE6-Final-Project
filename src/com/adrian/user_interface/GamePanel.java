@@ -92,7 +92,7 @@ public class GamePanel extends JPanel implements Runnable {
 	// Player
 	final int respawnX = tileSize * 30;
 	final int respawnY = tileSize * 28;
-	public Player player = new Player(this, keyInput, new Vector2D(respawnX, respawnY));	
+	public Player player;	
 	
 	public int gameState;
 	public boolean canPlay = true;
@@ -139,10 +139,12 @@ public class GamePanel extends JPanel implements Runnable {
 	}
 	
 	public void newGame(Entity entity, int index) {
+		// Reset
+		worldSetup();
 		try {
 			connectDB();
-			db.updateDB(respawnX, "entity", "x", index);
-			db.updateDB(respawnY, "entity", "y", index);
+			db.updateDB((int) player.worldPosition.x, "entity", "x", index);
+			db.updateDB((int) player.worldPosition.y, "entity", "y", index);
 			db.updateDB(entity.currentLife, "entity", "hp", index);
 			db.updateDB(entity.maxLife, "entity", "maxhp", index);
 			
@@ -191,6 +193,7 @@ public class GamePanel extends JPanel implements Runnable {
 		} catch (SQLException | NumberFormatException e) {
 			e.printStackTrace();
 		}
+		player = new Player(this, keyInput, new Vector2D(respawnX, respawnY));
 		assetHandler.reset();
 		assetHandler.setItemObject();
 		assetHandler.setObstacle();

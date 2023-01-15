@@ -33,6 +33,10 @@ public class UserInterface {
 	public String currentDialogue = "";
 	public Vector2D dialogueOffset;
 	
+	public ArrayList<String> messages = new ArrayList<>();
+	public ArrayList<Integer> messageCounter = new ArrayList<>();
+	
+	
 	public String titleScreen = "Rad-dew's Adventure";
 	
 	public List<String> menuOption;
@@ -41,6 +45,8 @@ public class UserInterface {
 	public int selectionY = 0;
 	
 	public int titleScreenState = 0;
+	
+	public int dialogBoxHeightOffset = 0;
 	
 	@SuppressWarnings("serial")
 	public UserInterface(GamePanel gp) {
@@ -101,6 +107,8 @@ public class UserInterface {
 		
 		else if(gp.gameState == GameState.Continue.state) {
 			drawPlayerLife();
+			drawMessageLog();
+			
 		}
 		
 		else if (gp.gameState == GameState.Pause.state) {
@@ -114,6 +122,36 @@ public class UserInterface {
 		}
 		else if(gp.gameState == GameState.ShowStat.state) {
 			drawPlayerStat();
+		}
+	}
+	
+	public void addMessage(String text) {
+		messages.add(text);
+		messageCounter.add(0);
+	}
+	
+	
+	public void drawMessageLog() {
+		int messageX = gp.tileSize;
+		int messageY = gp.tileSize * 4;
+		g2.setFont(g2.getFont().deriveFont(Font.BOLD, 32F));
+		
+		for(int i = 0; i < messages.size(); i++) {
+			if(messages.get(i) != null) {
+				g2.setColor(Color.black);
+				g2.drawString(messages.get(i), messageX + 2, messageY + 2);
+				g2.setColor(Color.white);
+				g2.drawString(messages.get(i), messageX, messageY);
+				
+				int counter = messageCounter.get(i) + 1;
+				messageCounter.set(i, counter);
+				messageY += 50;
+				
+				if(messageCounter.get(i) > 180) {
+					messages.remove(i);
+					messageCounter.remove(i);
+				}
+			}
 		}
 	}
 	
@@ -240,7 +278,6 @@ public class UserInterface {
 			x += gp.tileSize;
 		}
 	}
-	
 
 	public void drawTitleScreen() {
 		g2.setColor(new Color(0, 0, 0));
@@ -321,10 +358,12 @@ public class UserInterface {
 	
 	public void drawDialogScreen() {
 		// USE VECTOR2D or Rectangle
+		dialogBoxHeightOffset = (currentDialogue.length() / 29) + 2;
+		
 		int x = gp.tileSize * 2;
 		int y = (int) ((gp.tileSize / 2) + (gp.tileSize * this.dialogueOffset.y));
-		int width = gp.screenWidth - (gp.tileSize * 4);
-		int height = gp.tileSize * 4;
+		int width = gp.screenWidth - (gp.tileSize * 5);
+		int height = gp.tileSize * dialogBoxHeightOffset;
 		
 		drawSubWindow(x, y, width, height, 200);
 		
@@ -333,6 +372,7 @@ public class UserInterface {
 		y += gp.tileSize;
 		
 		for(String line: currentDialogue.split("\n")) {
+			line = line.replace("\t", "    ");
 			g2.drawString(line, x, y);
 			y += 40;
 		}
@@ -346,6 +386,19 @@ public class UserInterface {
 		g2.setColor(color);
 		g2.setStroke(new BasicStroke(5));
 		g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25);
+	}
+	
+	public String getAdjustableText(String originalText) {
+		String text = originalText;
+		String newText = "";
+		int textLimit = 29;
+		int newLineCount = text.length() / textLimit;
+		for(int i = 1; i < newLineCount + 1; i++) {
+			int leftIndex = text.substring(0, (textLimit * i)).lastIndexOf(" ");
+			text = text.substring(0, (leftIndex * 1) + 1) + "\n" + text.substring((leftIndex * 1) + 1);
+			newText = text;
+		}
+		return newText;
 	}
 	
 	private int getCenterText(String text) {

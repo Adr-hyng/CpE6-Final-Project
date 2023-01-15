@@ -16,7 +16,7 @@ public class Boots extends ItemObject {
 	
 	public void setDialogue () {
 		gp.ui.currentDialogue = "You obtained a " + this.name;
-		gp.playSoundEffect(7);
+		gp.playSoundEffect(9);
 		gp.gameState = GameState.Dialogue.state;
 	}
 }

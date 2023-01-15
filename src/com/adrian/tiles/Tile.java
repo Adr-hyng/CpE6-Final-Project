@@ -8,7 +8,6 @@ import javax.imageio.ImageIO;
 
 import com.adrian.GlobalTool;
 import com.adrian.user_interface.GamePanel;
-import com.adrian.utils.UtilityTool;
 
 public class Tile {
 	public BufferedImage image;

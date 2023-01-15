@@ -32,7 +32,9 @@ public class NPC extends Entity{
 	
 	public void trigger() {
 		if(dialogues[dialogueIndex] == null) dialogueIndex = 0;
-		gp.ui.currentDialogue = dialogues[dialogueIndex];
+		String text = dialogues[dialogueIndex];
+		if(text.length() >= 29) text = gp.ui.getAdjustableText(dialogues[dialogueIndex]);
+		gp.ui.currentDialogue = text;
 		dialogueIndex = (dialogueIndex + 1 ) % dialogues.length;
 		switch(gp.player.direction) {
 		case "up":

@@ -38,12 +38,12 @@ public class AssetSetter {
 	public void setNPC() {
 		// BUG WHEN 1st Index
 		gp.npcs[0] = new NPC(gp, new String[] {
-				"I may be an old man, but I was \nonce a great adventurer like \nyou!",
-				"I remember as it was like \nyesterday, wherein I was \nstrong lad like you."
+				"I may be an old man, but I was once a great adventurer like you!",
+				"I remember as it was like yesterday, wherein I was strong lad like you."
 		});
 		gp.npcs[2] = new NPC(gp, new String[] {
-				"All we have to decide is what \nto do with the time that is \ngiven us.",
-				"I will not say: do not weep; \nfor not all tears are an evil."
+				"All we have to decide is what to do with the time that is given us.",
+				"I will not say: do not weep; for not all tears are an evil."
 		});
 		
 		gp.npcs[0].worldPosition = new Vector2D(gp.tileSize * 47, gp.tileSize * 28);
@@ -51,20 +51,25 @@ public class AssetSetter {
 	}
 	
 	public void setMonster() {
-		gp.monsters[0] = new GreenSlime(gp);
-		gp.monsters[0].worldPosition = new Vector2D(gp.tileSize * 20, gp.tileSize * 37);
+		int i = 0;
 		
-		gp.monsters[1] = new GreenSlime(gp);
-		gp.monsters[1].worldPosition = new Vector2D(gp.tileSize * 12, gp.tileSize * 23);
+		// Slime Monsters
+		gp.monsters[i] = new GreenSlime(gp);
+		gp.monsters[i].worldPosition = new Vector2D(gp.tileSize * 20, gp.tileSize * 37);
+		i++;
+		gp.monsters[i] = new GreenSlime(gp);
+		gp.monsters[i].worldPosition = new Vector2D(gp.tileSize * 12, gp.tileSize * 23);
+		i++;
+		gp.monsters[i] = new GreenSlime(gp);
+		gp.monsters[i].worldPosition = new Vector2D(gp.tileSize * 21, gp.tileSize * 6);
+		i++;
+		gp.monsters[i] = new GreenSlime(gp);
+		gp.monsters[i].worldPosition = new Vector2D(gp.tileSize * 43, gp.tileSize * 13);
+		i++;
+		gp.monsters[i] = new GreenSlime(gp);
+		gp.monsters[i].worldPosition = new Vector2D(gp.tileSize * 40, gp.tileSize * 30);
+		i++;
 		
-		gp.monsters[2] = new GreenSlime(gp);
-		gp.monsters[2].worldPosition = new Vector2D(gp.tileSize * 21, gp.tileSize * 6);
-		
-		gp.monsters[3] = new GreenSlime(gp);
-		gp.monsters[3].worldPosition = new Vector2D(gp.tileSize * 43, gp.tileSize * 13);
-		
-		gp.monsters[4] = new GreenSlime(gp);
-		gp.monsters[4].worldPosition = new Vector2D(gp.tileSize * 40, gp.tileSize * 30);
 		
 	}
 	
@@ -106,6 +111,8 @@ public class AssetSetter {
 	}
 	
 	public void reset() {
+		gp.ui.messages.clear();
+		gp.ui.messageCounter.clear();
 		gp.entityList.clear();
 		
 		for(int i = 0; i < gp.obstacles.length; i++) {
