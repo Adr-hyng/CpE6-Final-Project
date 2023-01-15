@@ -7,7 +7,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.adrian.GlobalTool;
-import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interfaces.GamePanel;
 
 public class Tile {
 	public BufferedImage image;

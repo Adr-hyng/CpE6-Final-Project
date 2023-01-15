@@ -1,7 +1,7 @@
 package com.adrian.collisions;
 
-import com.adrian.entity.Entity;
-import com.adrian.user_interface.GamePanel;
+import com.adrian.base.Entity;
+import com.adrian.user_interfaces.GamePanel;
 
 public class CollisionHandler {
 	GamePanel gp;

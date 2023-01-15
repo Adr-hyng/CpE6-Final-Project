@@ -1,18 +1,16 @@
-package com.adrian.entity;
+package com.adrian.base;
 
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import com.adrian.inputs.KeyHandler;
-import com.adrian.objects.ItemObject;
-import com.adrian.user_interface.GamePanel;
-import com.adrian.user_interface.GameState;
+import com.adrian.inventory.Inventory;
+import com.adrian.items.equipments.CommonSword;
+import com.adrian.items.equipments.WoodenShield;
+import com.adrian.user_interfaces.GamePanel;
+import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.Vector2D;
-import com.adrian.weapon.CommonSword;
-import com.adrian.weapon.Shield;
-import com.adrian.weapon.Weapon;
-import com.adrian.weapon.WoodenShield;
 
 public class Player extends Entity {
 	
@@ -22,9 +20,10 @@ public class Player extends Entity {
 	public Vector2D screen;
 	public int keyCount = 0;
 	
-	// Character Attributes
+	// Character Equipment
 	public Weapon currentWeapon;
 	public Shield currentShield;
+	public Inventory inventory;
 	
 	public Player(GamePanel gp, KeyHandler keyInput, Vector2D position) {
 		super(gp);
@@ -60,6 +59,7 @@ public class Player extends Entity {
 		this.coin = 0;
 		this.currentWeapon = new CommonSword(gp);
 		this.currentShield = new WoodenShield(gp);
+		this.inventory = new Inventory(gp);
 		this.attack = getAttackStat();
 		this.defense = getDefenseStat();
 	}
@@ -193,7 +193,7 @@ public class Player extends Entity {
 	
 	private void pickUpObject(int index) {
 		if(index == 999) return;
-		ItemObject obtainedItem = gp.itemObjects[index];
+		Item obtainedItem = gp.itemObjects[index];
 		switch(obtainedItem.name) {
 		case "Key":
 			obtainedItem.setDialogue();

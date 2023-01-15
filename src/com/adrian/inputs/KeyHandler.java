@@ -5,8 +5,8 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.adrian.user_interface.GamePanel;
-import com.adrian.user_interface.GameState;
+import com.adrian.user_interfaces.GamePanel;
+import com.adrian.user_interfaces.GameState;
 
 public class KeyHandler implements KeyListener{
 	GamePanel gp;
@@ -173,6 +173,31 @@ public class KeyHandler implements KeyListener{
 	private void StatsState(int code) {
 		if (code == KeyEvent.VK_C) {
 			gp.gameState = GameState.Continue.state;
+		}
+		
+		if (code == KeyEvent.VK_W) {
+			if(gp.ui.inventorySlotRow != 0) {
+				gp.ui.inventorySlotRow--;
+				gp.playSoundEffect(10);
+			}
+		}
+		if (code == KeyEvent.VK_A) {
+			if(gp.ui.inventorySlotCol != 0) {
+				gp.ui.inventorySlotCol--;
+				gp.playSoundEffect(10);
+			}
+		}
+		if (code == KeyEvent.VK_S) {
+			if(gp.ui.inventorySlotRow != (gp.ui.inventoryMaxSlotY - 1) ) {
+				gp.ui.inventorySlotRow++;
+				gp.playSoundEffect(10);
+			}
+		}
+		if (code == KeyEvent.VK_D) {
+			if(gp.ui.inventorySlotCol != (gp.ui.inventoryMaxSlotX - 1) ) {
+				gp.ui.inventorySlotCol++;
+				gp.playSoundEffect(10);
+			}
 		}
 	}
 

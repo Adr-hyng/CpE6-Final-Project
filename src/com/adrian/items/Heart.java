@@ -1,9 +1,9 @@
-package com.adrian.objects;
+package com.adrian.items;
 
 import java.awt.image.BufferedImage;
 
-import com.adrian.entity.Entity;
-import com.adrian.user_interface.GamePanel;
+import com.adrian.base.Entity;
+import com.adrian.user_interfaces.GamePanel;
 
 public class Heart extends Entity {
 	public BufferedImage emptyHeartImage, halfHeartImage;

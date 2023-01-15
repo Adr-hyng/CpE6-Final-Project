@@ -1,4 +1,4 @@
-package com.adrian.objects;
+package com.adrian.base;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -9,21 +9,23 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.adrian.GlobalTool;
-import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interfaces.GamePanel;
 import com.adrian.utils.Vector2D;
 
-public class ItemObject {
+public abstract class Item {
 	protected GamePanel gp;
 
 	public BufferedImage image;
 	public String name = "";
+	public String description = "";
+	public int textDescriptionLimit = 30;
 	public boolean collision = false;
 	public Vector2D worldPosition;
 	public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 	public int solidAreaDefaultX = 0;
 	public int solidAreaDefaultY = 0;
 
-	public ItemObject(GamePanel gp) {
+	public Item(GamePanel gp) {
 		this.gp = gp;
 	}
 	
@@ -53,5 +55,9 @@ public class ItemObject {
 			e.printStackTrace();
 		}
 		return image;
+	}
+
+	protected void getSprite() {
+		
 	}
 }

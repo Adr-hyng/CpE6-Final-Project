@@ -1,13 +1,15 @@
-package com.adrian.objects;
+package com.adrian.items;
 
-import com.adrian.user_interface.GamePanel;
-import com.adrian.user_interface.GameState;
+import com.adrian.base.Item;
+import com.adrian.user_interfaces.GamePanel;
+import com.adrian.user_interfaces.GameState;
 
-public class Key extends ItemObject {
+public class Key extends Item {
 	
 	public Key(GamePanel gp) {
 		super(gp);
 		this.name = "Key";
+		this.description = "[" + name + "]\nIt can be used to open \ndoors.";
 		this.getSprite();
 	}
 

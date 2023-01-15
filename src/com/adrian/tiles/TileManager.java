@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import com.adrian.GlobalTool;
-import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interfaces.GamePanel;
 import com.adrian.utils.Vector2D;
 
 public class TileManager {

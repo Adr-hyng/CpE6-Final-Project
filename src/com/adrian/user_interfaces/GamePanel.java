@@ -1,4 +1,4 @@
-package com.adrian.user_interface;
+package com.adrian.user_interfaces;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,14 +11,14 @@ import java.util.Comparator;
 
 import javax.swing.JPanel;
 
+import com.adrian.base.Entity;
+import com.adrian.base.Item;
+import com.adrian.base.Player;
 import com.adrian.collisions.CollisionHandler;
 import com.adrian.database.DatabaseManager;
-import com.adrian.entity.Entity;
-import com.adrian.entity.Player;
 import com.adrian.events.EventHandler;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.inputs.MouseHandler;
-import com.adrian.objects.ItemObject;
 import com.adrian.sounds.Sound;
 import com.adrian.tiles.TileManager;
 import com.adrian.utils.AssetSetter;
@@ -84,7 +84,7 @@ public class GamePanel extends JPanel implements Runnable {
 	public Entity monsters[] = new Entity[20];
 	
 	// Item Objects
-	public ItemObject itemObjects[] = new ItemObject[10];
+	public Item itemObjects[] = new Item[10];
 	
 	// Entity List
 	public ArrayList<Entity> entityList = new ArrayList<>();
@@ -92,7 +92,7 @@ public class GamePanel extends JPanel implements Runnable {
 	// Player
 	final int respawnX = tileSize * 30;
 	final int respawnY = tileSize * 28;
-	public Player player;	
+	public Player player = new Player(this, keyInput, new Vector2D(respawnX, respawnY));	
 	
 	public int gameState;
 	public boolean canPlay = true;
@@ -152,7 +152,6 @@ public class GamePanel extends JPanel implements Runnable {
 			entity.worldPosition.y = Integer.parseInt((String) db.readDB("y", "entity", "idNo = " + index + ";").get(0));
 			entity.currentLife = Integer.parseInt((String) db.readDB("hp", "entity", "idNo = " + index + ";").get(0));
 			entity.maxLife = Integer.parseInt((String) db.readDB("maxhp", "entity", "idNo = " + index + ";").get(0));
-			this.worldSetup();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -193,6 +192,7 @@ public class GamePanel extends JPanel implements Runnable {
 		} catch (SQLException | NumberFormatException e) {
 			e.printStackTrace();
 		}
+		player = null;
 		player = new Player(this, keyInput, new Vector2D(respawnX, respawnY));
 		assetHandler.reset();
 		assetHandler.setItemObject();

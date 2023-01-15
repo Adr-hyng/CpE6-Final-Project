@@ -1,10 +1,10 @@
-package com.adrian.entity;
+package com.adrian.base;
 
 import java.awt.Rectangle;
 import java.util.Random;
 
-import com.adrian.user_interface.GamePanel;
-import com.adrian.user_interface.GameState;
+import com.adrian.user_interfaces.GamePanel;
+import com.adrian.user_interfaces.GameState;
 
 public class NPC extends Entity{
 	public NPC(GamePanel gp, String[] dialogues) {
@@ -33,7 +33,8 @@ public class NPC extends Entity{
 	public void trigger() {
 		if(dialogues[dialogueIndex] == null) dialogueIndex = 0;
 		String text = dialogues[dialogueIndex];
-		if(text.length() >= 29) text = gp.ui.getAdjustableText(dialogues[dialogueIndex]);
+		int textLimit = 29;
+		if(text.length() >= textLimit) text = gp.ui.getAdjustableText(dialogues[dialogueIndex], textLimit);
 		gp.ui.currentDialogue = text;
 		dialogueIndex = (dialogueIndex + 1 ) % dialogues.length;
 		switch(gp.player.direction) {

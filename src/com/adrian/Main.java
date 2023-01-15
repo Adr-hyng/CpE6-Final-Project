@@ -7,7 +7,7 @@ import java.awt.event.WindowListener;
 
 import javax.swing.JFrame;
 
-import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interfaces.GamePanel;
 
 // Here's the Google Drive Link for the AssetS: https://drive.google.com/drive/folders/1mtz-dJuiuUXyb-aalhCXdpJPTCj-IjYM
 
@@ -40,7 +40,6 @@ public class Main {
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
 		
-		gamePanel.worldSetup();
 		gamePanel.startGameThread();
 	}
 }

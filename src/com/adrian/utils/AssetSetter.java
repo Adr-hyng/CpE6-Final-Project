@@ -2,12 +2,12 @@ package com.adrian.utils;
 
 import java.awt.Graphics2D;
 
-import com.adrian.entity.GreenSlime;
-import com.adrian.entity.NPC;
-import com.adrian.objects.Boots;
-import com.adrian.objects.Key;
+import com.adrian.base.NPC;
+import com.adrian.items.Boots;
+import com.adrian.items.Key;
+import com.adrian.monsters.GreenSlime;
 import com.adrian.obstacles.Door;
-import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interfaces.GamePanel;
 
 public class AssetSetter {
 	GamePanel gp;

@@ -1,4 +1,4 @@
-package com.adrian.entity;
+package com.adrian.base;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -10,7 +10,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.adrian.GlobalTool;
-import com.adrian.user_interface.GamePanel;
+import com.adrian.user_interfaces.GamePanel;
 import com.adrian.utils.Vector2D;
 
 public abstract class Entity {
@@ -85,12 +85,10 @@ public abstract class Entity {
 		return image;
 	}
 	
-	// STAY
 	// Set Dialogue Speech to NPC / Obstacles
 	protected void setDialogue() {}
 	protected void setDialogue(String text) {}
 	
-	// STAY
 	protected void trigger() {}
 	protected void damageReaction() {}
 	protected void startMove() {}

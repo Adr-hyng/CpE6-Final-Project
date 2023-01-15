@@ -1,4 +1,4 @@
-package com.adrian.user_interface;
+package com.adrian.user_interfaces;
 
 public enum GameState {
 	Menu(0),

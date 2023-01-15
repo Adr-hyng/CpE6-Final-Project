@@ -1,12 +1,14 @@
-package com.adrian.objects;
+package com.adrian.items;
 
-import com.adrian.user_interface.GamePanel;
-import com.adrian.user_interface.GameState;
+import com.adrian.base.Item;
+import com.adrian.user_interfaces.GamePanel;
+import com.adrian.user_interfaces.GameState;
 
-public class Boots extends ItemObject {
+public class Boots extends Item {
 	public Boots(GamePanel gp) {
 		super(gp);
 		this.name = "Boots";
+		this.description = "[" + name + "]\nAn old man's boot.";
 		this.getSprite();
 	}
 

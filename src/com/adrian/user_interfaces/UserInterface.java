@@ -1,4 +1,4 @@
-package com.adrian.user_interface;
+package com.adrian.user_interfaces;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -17,7 +17,8 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import com.adrian.GlobalTool;
-import com.adrian.objects.Heart;
+import com.adrian.base.Item;
+import com.adrian.items.Heart;
 import com.adrian.utils.Vector2D;
 
 public class UserInterface {
@@ -38,15 +39,23 @@ public class UserInterface {
 	
 	
 	public String titleScreen = "Rad-dew's Adventure";
+	public int titleScreenState = 0;
+	public int dialogBoxHeightOffset = 0;
+	public int itemDescriptionHeight = 0;
 	
 	public List<String> menuOption;
 	public List<String> classOption;
+	
+	// Cursors
 	public int defaultSelectionY = 4;
 	public int selectionY = 0;
 	
-	public int titleScreenState = 0;
+	// Inventory
+	public int inventorySlotCol = 0;
+	public int inventorySlotRow = 0;
+	public final int inventoryMaxSlotX = 5; 
+	public int inventoryMaxSlotY = 1; 
 	
-	public int dialogBoxHeightOffset = 0;
 	
 	@SuppressWarnings("serial")
 	public UserInterface(GamePanel gp) {
@@ -117,19 +126,13 @@ public class UserInterface {
 		}
 		
 		else if(gp.gameState == GameState.Dialogue.state) {
-			drawPlayerLife();
 			drawDialogScreen();
 		}
 		else if(gp.gameState == GameState.ShowStat.state) {
 			drawPlayerStat();
+			drawPlayerInventory();
 		}
 	}
-	
-	public void addMessage(String text) {
-		messages.add(text);
-		messageCounter.add(0);
-	}
-	
 	
 	public void drawMessageLog() {
 		int messageX = gp.tileSize;
@@ -151,6 +154,71 @@ public class UserInterface {
 					messages.remove(i);
 					messageCounter.remove(i);
 				}
+			}
+		}
+	}
+	
+	public void drawPlayerInventory() {
+		int frameX = gp.tileSize * 9;
+		int frameY = gp.tileSize;
+		int frameWidth = gp.tileSize * (inventoryMaxSlotX + 1);
+		int frameHeight = gp.tileSize * (inventoryMaxSlotY + 1);
+		drawSubWindow(frameX, frameY, frameWidth, frameHeight, 200);
+		
+		// Slot 
+		final int slotXStart = frameX + 20;
+		final int slotYStart = frameY + 20;
+		int slotX = slotXStart;
+		int slotY = slotYStart;
+		int slotSize = gp.tileSize + 3;
+		
+		int j = 0;
+		for(int i = 0; i < gp.player.inventory.items.size(); i++) {
+			g2.drawImage(gp.player.inventory.items.get(i).image, slotX, slotY, null);
+			slotX += slotSize;
+			if(i == 4 + (j * inventoryMaxSlotX)) {
+				slotX = slotXStart;
+				slotY += slotSize;
+				j++;
+			}
+		}
+		j = 0;
+		
+		// Cursor
+		int cursorX = slotXStart + (slotSize * inventorySlotCol);
+		int cursorY = slotYStart + (slotSize * inventorySlotRow);
+		int cursorWidth = gp.tileSize;
+		int cursorHeight = gp.tileSize;
+		
+		// Draw Cursor
+		g2.setColor(Color.white);
+		g2.setStroke(new BasicStroke(3));
+		g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
+		
+		// Description Frame
+		int itemIndex = gp.player.inventory.getItemIndex();
+		String itemDescription = gp.player.inventory.items.get(itemIndex).description;
+		String description = itemDescription.substring(itemDescription.indexOf("\n"));
+		int textLimit = gp.player.inventory.items.get(itemIndex).textDescriptionLimit;
+		gp.ui.itemDescriptionHeight = (description.length() / textLimit) + 3;
+		
+		int dFrameX = frameX;
+		int dFrameY = frameY + frameHeight + gp.tileSize;
+		int dFrameWidth = frameWidth;
+//		System.out.println(itemDescriptionHeight);
+		int dFrameHeight = gp.tileSize * itemDescriptionHeight;
+		drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight, 200);
+		
+		// Description Label
+		int textX = dFrameX + 20;
+		int textY = dFrameY + gp.tileSize;
+		g2.setFont(g2.getFont().deriveFont(28F));
+		
+//		int itemIndex = gp.player.inventory.getItemIndex();
+		if(itemIndex < gp.player.inventory.items.size()) {
+			for(String line: gp.player.inventory.items.get(itemIndex).description.split("\n")) {
+				g2.drawString(line, textX, textY);
+				textY += 32;
 			}
 		}
 	}
@@ -387,11 +455,15 @@ public class UserInterface {
 		g2.setStroke(new BasicStroke(5));
 		g2.drawRoundRect(x + 5, y + 5, width - 10, height - 10, 25, 25);
 	}
+
+	public void addMessage(String text) {
+		messages.add(text);
+		messageCounter.add(0);
+	}
 	
-	public String getAdjustableText(String originalText) {
+	public String getAdjustableText(String originalText, int textLimit) {
 		String text = originalText;
 		String newText = "";
-		int textLimit = 29;
 		int newLineCount = text.length() / textLimit;
 		for(int i = 1; i < newLineCount + 1; i++) {
 			int leftIndex = text.substring(0, (textLimit * i)).lastIndexOf(" ");

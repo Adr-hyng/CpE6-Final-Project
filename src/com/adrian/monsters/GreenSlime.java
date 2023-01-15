@@ -1,9 +1,10 @@
-package com.adrian.entity;
+package com.adrian.monsters;
 
 import java.awt.Rectangle;
 import java.util.Random;
 
-import com.adrian.user_interface.GamePanel;
+import com.adrian.base.Entity;
+import com.adrian.user_interfaces.GamePanel;
 
 public class GreenSlime extends Entity{
 	public GreenSlime(GamePanel gp) {
