@@ -17,7 +17,6 @@ import java.util.List;
 import javax.swing.ImageIcon;
 
 import com.adrian.GlobalTool;
-import com.adrian.base.Item;
 import com.adrian.items.Heart;
 import com.adrian.utils.Vector2D;
 
@@ -41,7 +40,7 @@ public class UserInterface {
 	public String titleScreen = "Rad-dew's Adventure";
 	public int titleScreenState = 0;
 	public int dialogBoxHeightOffset = 0;
-	public int itemDescriptionHeight = 0;
+	public int itemDescriptionHeight = 2;
 	
 	public List<String> menuOption;
 	public List<String> classOption;
@@ -174,6 +173,12 @@ public class UserInterface {
 		
 		int j = 0;
 		for(int i = 0; i < gp.player.inventory.items.size(); i++) {
+			
+			if(gp.player.inventory.items.get(i) == gp.player.currentWeapon || gp.player.inventory.items.get(i) == gp.player.currentShield) {
+				g2.setColor(new Color(240, 190, 90));
+				g2.fillRoundRect(slotX, slotY, slotSize, slotSize, 10, 10);
+			}
+			
 			g2.drawImage(gp.player.inventory.items.get(i).image, slotX, slotY, null);
 			slotX += slotSize;
 			if(i == 4 + (j * inventoryMaxSlotX)) {
@@ -196,26 +201,23 @@ public class UserInterface {
 		g2.drawRoundRect(cursorX, cursorY, cursorWidth, cursorHeight, 10, 10);
 		
 		// Description Frame
-		int itemIndex = gp.player.inventory.getItemIndex();
-		String itemDescription = gp.player.inventory.items.get(itemIndex).description;
-		String description = itemDescription.substring(itemDescription.indexOf("\n"));
-		int textLimit = gp.player.inventory.items.get(itemIndex).textDescriptionLimit;
-		gp.ui.itemDescriptionHeight = (description.length() / textLimit) + 3;
-		
 		int dFrameX = frameX;
 		int dFrameY = frameY + frameHeight + gp.tileSize;
 		int dFrameWidth = frameWidth;
-//		System.out.println(itemDescriptionHeight);
 		int dFrameHeight = gp.tileSize * itemDescriptionHeight;
-		drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight, 200);
 		
 		// Description Label
 		int textX = dFrameX + 20;
 		int textY = dFrameY + gp.tileSize;
 		g2.setFont(g2.getFont().deriveFont(28F));
 		
-//		int itemIndex = gp.player.inventory.getItemIndex();
+		int itemIndex = gp.player.inventory.getItemIndex();
 		if(itemIndex < gp.player.inventory.items.size()) {
+			String itemDescription = gp.player.inventory.items.get(itemIndex).description;
+			String description = itemDescription.substring(itemDescription.indexOf("\n"));
+			int textLimit = gp.player.inventory.items.get(itemIndex).textDescriptionLimit;
+			gp.ui.itemDescriptionHeight = (description.length() / textLimit) + 3;
+			drawSubWindow(dFrameX, dFrameY, dFrameWidth, dFrameHeight, 200);
 			for(String line: gp.player.inventory.items.get(itemIndex).description.split("\n")) {
 				g2.drawString(line, textX, textY);
 				textY += 32;

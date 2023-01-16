@@ -3,10 +3,10 @@ package com.adrian.monsters;
 import java.awt.Rectangle;
 import java.util.Random;
 
-import com.adrian.base.Entity;
+import com.adrian.base.Monster;
 import com.adrian.user_interfaces.GamePanel;
 
-public class GreenSlime extends Entity{
+public class GreenSlime extends Monster {
 	public GreenSlime(GamePanel gp) {
 		super(gp);
 		
@@ -14,7 +14,6 @@ public class GreenSlime extends Entity{
 		movementSpeed = 1;
 		maxLife = 5;
 		currentLife = maxLife;
-		type =  2;
 		attack = 2;
 		defense = 0;
 		exp = 5;

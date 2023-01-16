@@ -16,8 +16,8 @@ public class Boots extends Item {
 		this.image = this.loadSprite("objects\\boots.png");
 	}
 	
-	public void setDialogue () {
-		gp.ui.currentDialogue = "You obtained a " + this.name;
+	public void setDialogue (String text) {
+		gp.ui.currentDialogue = text;
 		gp.playSoundEffect(9);
 		gp.gameState = GameState.Dialogue.state;
 	}

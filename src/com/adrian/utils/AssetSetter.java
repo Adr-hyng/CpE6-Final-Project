@@ -5,6 +5,9 @@ import java.awt.Graphics2D;
 import com.adrian.base.NPC;
 import com.adrian.items.Boots;
 import com.adrian.items.Key;
+import com.adrian.items.RedPotion;
+import com.adrian.items.equipments.BlueShield;
+import com.adrian.items.equipments.RustyAxe;
 import com.adrian.monsters.GreenSlime;
 import com.adrian.obstacles.Door;
 import com.adrian.user_interfaces.GamePanel;
@@ -25,6 +28,15 @@ public class AssetSetter {
 		
 		gp.itemObjects[2] = new Key(gp);
 		gp.itemObjects[2].worldPosition = new Vector2D(gp.tileSize * 39, gp.tileSize * 30);
+		
+		gp.itemObjects[3] = new RustyAxe(gp);
+		gp.itemObjects[3].worldPosition = new Vector2D(gp.tileSize * 22, gp.tileSize * 21);
+		
+		gp.itemObjects[4] = new BlueShield(gp);
+		gp.itemObjects[4].worldPosition = new Vector2D(gp.tileSize * 48, gp.tileSize * 33);
+		
+		gp.itemObjects[5] = new RedPotion(gp);
+		gp.itemObjects[5].worldPosition = new Vector2D(gp.tileSize * 35, gp.tileSize * 21);
 	}
 	
 	public void setObstacle() {

@@ -5,6 +5,8 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.adrian.base.Item;
+import com.adrian.items.Key;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
 
@@ -198,6 +200,10 @@ public class KeyHandler implements KeyListener{
 				gp.ui.inventorySlotCol++;
 				gp.playSoundEffect(10);
 			}
+		}
+		
+		if (code == KeyEvent.VK_ENTER) {
+			gp.player.selectedItem();
 		}
 	}
 

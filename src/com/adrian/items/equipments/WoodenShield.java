@@ -8,7 +8,7 @@ public class WoodenShield extends Shield{
 	public WoodenShield(GamePanel gp) {
 		super(gp);
 		this.name = "Wooden Shield";
-		this.description = "[" + name + "]\nA shield that is made by wood.";
+		this.description = "[" + name + "]\nA shield that is made \nby wood.";
 		this.defenseValue = 1;
 		this.getSprite();
 	}

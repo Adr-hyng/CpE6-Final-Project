@@ -95,7 +95,7 @@ public abstract class Entity {
 	
 	protected void contactPlayer() {
 		boolean contactPlayer = gp.collisionHandler.collidePlayer(this);
-		if (this.type == 2 && contactPlayer == true) {
+		if (this instanceof Monster && contactPlayer == true) {
 			if(!gp.player.invincible) {
 				gp.player.currentLife --;
 				gp.player.invincible = true;
@@ -220,7 +220,7 @@ public abstract class Entity {
 				break;
 			}
 			
-			if (type == 2 && showHealthBar) {
+			if (this instanceof Monster && showHealthBar) {
 				double oneScale = (double) gp.tileSize / maxLife;
 				double healthBar = oneScale * currentLife;
 				int showSeconds = 4;

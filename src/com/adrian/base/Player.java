@@ -6,8 +6,9 @@ import java.awt.Rectangle;
 
 import com.adrian.inputs.KeyHandler;
 import com.adrian.inventory.Inventory;
-import com.adrian.items.equipments.CommonSword;
-import com.adrian.items.equipments.WoodenShield;
+import com.adrian.items.Key;
+import com.adrian.types.ItemType;
+import com.adrian.types.WeaponType;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.Vector2D;
@@ -18,7 +19,6 @@ public class Player extends Entity {
 	KeyHandler keyInput;
 	
 	public Vector2D screen;
-	public int keyCount = 0;
 	
 	// Character Equipment
 	public Weapon currentWeapon;
@@ -57,9 +57,9 @@ public class Player extends Entity {
 		this.exp = 0;
 		this.nextLevelExp = 5;
 		this.coin = 0;
-		this.currentWeapon = new CommonSword(gp);
-		this.currentShield = new WoodenShield(gp);
 		this.inventory = new Inventory(gp);
+		this.currentWeapon = this.inventory.getItem(0);
+		this.currentShield = this.inventory.getItem(1);
 		this.attack = getAttackStat();
 		this.defense = getDefenseStat();
 	}
@@ -67,6 +67,7 @@ public class Player extends Entity {
 	
 	// PUT THIS SOMEWHERE ELSE like PlayerStats Manager
 	private int getAttackStat() {
+		attackArea = currentWeapon.attackArea;
 		return attack = strength * currentWeapon.attackValue;
 	}
 	
@@ -87,6 +88,27 @@ public class Player extends Entity {
 			
 			gp.gameState = GameState.Dialogue.state;
 			gp.ui.currentDialogue = "\tYou are level " + this.level + " now!";
+		}
+	}
+	
+	public <T extends Item> void selectedItem() {
+		int itemIndex = this.inventory.getItemIndex();
+		if(itemIndex < this.inventory.items.size()) {
+			T selectedItem = this.inventory.getItem(itemIndex);
+			if(selectedItem.type == ItemType.Weapon) {
+				this.currentWeapon = (Weapon) selectedItem;
+				this.attack = getAttackStat();
+				this.getAttackSprites();
+			}
+			if(selectedItem.type == ItemType.Shield) {
+				this.currentShield = (Shield) selectedItem;
+				this.defense = getDefenseStat();
+			}
+			
+			if(selectedItem.type == ItemType.Consumable) {
+				((Consumable) selectedItem).useItem(this);
+				this.inventory.removeItem(selectedItem);
+			}
 		}
 	}
 	
@@ -194,14 +216,61 @@ public class Player extends Entity {
 	private void pickUpObject(int index) {
 		if(index == 999) return;
 		Item obtainedItem = gp.itemObjects[index];
+		String text;
 		switch(obtainedItem.name) {
+		case "Red Potion":
+			text = "You obtained a " + obtainedItem.name + "!";
+			if(this.inventory.isFull()) {
+				text = "Bag is full.";
+				obtainedItem.setDialogue(text);
+			} else {
+				obtainedItem.setDialogue(text);
+				this.inventory.addItem(obtainedItem);
+			}
+			gp.itemObjects[index] = null;
+			break;
 		case "Key":
-			obtainedItem.setDialogue();
-			this.keyCount++;
+			text = "You obtained a " + obtainedItem.name + "!";
+			if(this.inventory.isFull()) {
+				text = "Bag is full.";
+				obtainedItem.setDialogue(text);
+			} else {
+				obtainedItem.setDialogue(text);
+				this.inventory.addItem(obtainedItem);
+			}
 			gp.itemObjects[index] = null;
 			break;
 		case "Boots":
-			obtainedItem.setDialogue();
+			text = "You obtained a " + obtainedItem.name + "!";
+			if(this.inventory.isFull()) {
+				text = "Bag is full.";
+				obtainedItem.setDialogue(text);
+			} else {
+				obtainedItem.setDialogue(text);
+				this.inventory.addItem(obtainedItem);
+			}
+			gp.itemObjects[index] = null;
+			break;
+		case "Old Axe":
+			text = "You obtained a " + obtainedItem.name + "!";
+			if(this.inventory.isFull()) {
+				text = "Bag is full.";
+				obtainedItem.setDialogue(text);
+			} else {
+				obtainedItem.setDialogue(text);
+				this.inventory.addItem(obtainedItem);
+			}
+			gp.itemObjects[index] = null;
+			break;
+		case "Blue Shield":
+			text = "You obtained a " + obtainedItem.name + "!";
+			if(this.inventory.isFull()) {
+				text = "Bag is full.";
+				obtainedItem.setDialogue(text);
+			} else {
+				obtainedItem.setDialogue(text);
+				this.inventory.addItem(obtainedItem);
+			}
 			gp.itemObjects[index] = null;
 			break;
 		}
@@ -214,11 +283,12 @@ public class Player extends Entity {
 				Entity entity = entities[index];
 				switch (entity.name) {
 				case "Door":
-					if(this.keyCount > 0) {
+					Key key = new Key(this.gp);
+					if(this.inventory.hasItem(key)) {
 						gp.playSoundEffect(3);
 						entity.setDialogue("Unlocked the door.");
 						entities[index] = null;
-						keyCount--;
+						Item item = gp.player.inventory.popItem(key);
 					} else {
 						gp.playSoundEffect(6);
 						entity.setDialogue("Locked Door. You need 1 key\nto open this door.");
@@ -301,14 +371,26 @@ public class Player extends Entity {
 	}
 	
 	private void getAttackSprites() {
-		attack_up1 = loadSprite("player\\attack\\boy_attack_up_1.png", gp.tileSize, gp.tileSize * 2);
-		attack_up2 = loadSprite("player\\attack\\boy_attack_up_2.png", gp.tileSize, gp.tileSize * 2);
-		attack_down1 = loadSprite("player\\attack\\boy_attack_down_1.png", gp.tileSize, gp.tileSize * 2);
-		attack_down2 = loadSprite("player\\attack\\boy_attack_down_2.png", gp.tileSize, gp.tileSize * 2);
-		attack_right1 = loadSprite("player\\attack\\boy_attack_right_1.png", gp.tileSize * 2, gp.tileSize);
-		attack_right2 = loadSprite("player\\attack\\boy_attack_right_2.png", gp.tileSize * 2, gp.tileSize);
-		attack_left1 = loadSprite("player\\attack\\boy_attack_left_1.png", gp.tileSize * 2, gp.tileSize);
-		attack_left2 = loadSprite("player\\attack\\boy_attack_left_2.png", gp.tileSize * 2, gp.tileSize);
+		if(this.currentWeapon.weaponType == WeaponType.Sword) {
+			attack_up1 = loadSprite("player\\attack\\boy_attack_up_1.png", gp.tileSize, gp.tileSize * 2);
+			attack_up2 = loadSprite("player\\attack\\boy_attack_up_2.png", gp.tileSize, gp.tileSize * 2);
+			attack_down1 = loadSprite("player\\attack\\boy_attack_down_1.png", gp.tileSize, gp.tileSize * 2);
+			attack_down2 = loadSprite("player\\attack\\boy_attack_down_2.png", gp.tileSize, gp.tileSize * 2);
+			attack_right1 = loadSprite("player\\attack\\boy_attack_right_1.png", gp.tileSize * 2, gp.tileSize);
+			attack_right2 = loadSprite("player\\attack\\boy_attack_right_2.png", gp.tileSize * 2, gp.tileSize);
+			attack_left1 = loadSprite("player\\attack\\boy_attack_left_1.png", gp.tileSize * 2, gp.tileSize);
+			attack_left2 = loadSprite("player\\attack\\boy_attack_left_2.png", gp.tileSize * 2, gp.tileSize);
+		}
+		if(this.currentWeapon.weaponType == WeaponType.Axe) {
+			attack_up1 = loadSprite("player\\attack\\boy_axe_up_1.png", gp.tileSize, gp.tileSize * 2);
+			attack_up2 = loadSprite("player\\attack\\boy_axe_up_2.png", gp.tileSize, gp.tileSize * 2);
+			attack_down1 = loadSprite("player\\attack\\boy_axe_down_1.png", gp.tileSize, gp.tileSize * 2);
+			attack_down2 = loadSprite("player\\attack\\boy_axe_down_2.png", gp.tileSize, gp.tileSize * 2);
+			attack_right1 = loadSprite("player\\attack\\boy_axe_right_1.png", gp.tileSize * 2, gp.tileSize);
+			attack_right2 = loadSprite("player\\attack\\boy_axe_right_2.png", gp.tileSize * 2, gp.tileSize);
+			attack_left1 = loadSprite("player\\attack\\boy_axe_left_1.png", gp.tileSize * 2, gp.tileSize);
+			attack_left2 = loadSprite("player\\attack\\boy_axe_left_2.png", gp.tileSize * 2, gp.tileSize);
+		}
 	}
 	
 	private void getMoveSprites() {

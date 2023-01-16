@@ -9,27 +9,32 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.adrian.GlobalTool;
+import com.adrian.types.BaseType;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.utils.Vector2D;
 
-public abstract class Item {
-	protected GamePanel gp;
 
+
+public abstract class Item{
+	protected GamePanel gp;
+	
 	public BufferedImage image;
 	public String name = "";
 	public String description = "";
+	public BaseType type;
 	public int textDescriptionLimit = 30;
 	public boolean collision = false;
 	public Vector2D worldPosition;
 	public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 	public int solidAreaDefaultX = 0;
 	public int solidAreaDefaultY = 0;
+	public Rectangle attackArea = new Rectangle(0, 0, 0, 0);
 
 	public Item(GamePanel gp) {
 		this.gp = gp;
 	}
 	
-	public void setDialogue() {}
+	public void setDialogue(String text) {}
 
 	public void draw(Graphics2D g) {
 		Vector2D screenView = new Vector2D(worldPosition.x - gp.player.worldPosition.x + gp.player.screen.x, worldPosition.y - gp.player.worldPosition.y + gp.player.screen.y);
@@ -57,7 +62,5 @@ public abstract class Item {
 		return image;
 	}
 
-	protected void getSprite() {
-		
-	}
+	protected void getSprite() {}
 }
