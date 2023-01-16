@@ -1,14 +1,14 @@
 package com.adrian.items.equipments;
 
+import com.adrian.base.ItemTypes;
 import com.adrian.base.Weapon;
-import com.adrian.types.WeaponType;
 import com.adrian.user_interfaces.GamePanel;
 
 public class CommonSword extends Weapon{
 	public CommonSword(GamePanel gp) {
 		super(gp);
 		this.name = "Normal Sword";
-		this.weaponType = WeaponType.Sword;
+		this.weaponType = ItemTypes.Weapon.Sword.class;
 		this.description = "[" + name + "]\nAn old rusty sword.";
 		this.attackValue = 2;
 		this.attackArea.width = 36;

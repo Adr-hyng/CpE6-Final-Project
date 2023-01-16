@@ -5,8 +5,6 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.adrian.base.Item;
-import com.adrian.items.Key;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
 

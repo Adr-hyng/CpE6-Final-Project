@@ -9,7 +9,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 import com.adrian.GlobalTool;
-import com.adrian.types.BaseType;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.utils.Vector2D;
 
@@ -17,11 +16,11 @@ import com.adrian.utils.Vector2D;
 
 public abstract class Item{
 	protected GamePanel gp;
-	
+		
 	public BufferedImage image;
 	public String name = "";
 	public String description = "";
-	public BaseType type;
+	public Class<?> type;
 	public int textDescriptionLimit = 30;
 	public boolean collision = false;
 	public Vector2D worldPosition;

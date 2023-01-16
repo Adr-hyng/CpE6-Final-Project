@@ -7,8 +7,6 @@ import java.awt.Rectangle;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.inventory.Inventory;
 import com.adrian.items.Key;
-import com.adrian.types.ItemType;
-import com.adrian.types.WeaponType;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.Vector2D;
@@ -91,21 +89,23 @@ public class Player extends Entity {
 		}
 	}
 	
+	
 	public <T extends Item> void selectedItem() {
+		
 		int itemIndex = this.inventory.getItemIndex();
 		if(itemIndex < this.inventory.items.size()) {
 			T selectedItem = this.inventory.getItem(itemIndex);
-			if(selectedItem.type == ItemType.Weapon) {
+			if(selectedItem.type == ItemTypes.Weapon.class) {
 				this.currentWeapon = (Weapon) selectedItem;
 				this.attack = getAttackStat();
 				this.getAttackSprites();
 			}
-			if(selectedItem.type == ItemType.Shield) {
+			if(selectedItem.type == ItemTypes.Shield.class) {
 				this.currentShield = (Shield) selectedItem;
 				this.defense = getDefenseStat();
 			}
 			
-			if(selectedItem.type == ItemType.Consumable) {
+			if(selectedItem.type == ItemTypes.Consumable.class) {
 				((Consumable) selectedItem).useItem(this);
 				this.inventory.removeItem(selectedItem);
 			}
@@ -371,7 +371,7 @@ public class Player extends Entity {
 	}
 	
 	private void getAttackSprites() {
-		if(this.currentWeapon.weaponType == WeaponType.Sword) {
+		if(this.currentWeapon.weaponType == ItemTypes.Weapon.Sword.class) {
 			attack_up1 = loadSprite("player\\attack\\boy_attack_up_1.png", gp.tileSize, gp.tileSize * 2);
 			attack_up2 = loadSprite("player\\attack\\boy_attack_up_2.png", gp.tileSize, gp.tileSize * 2);
 			attack_down1 = loadSprite("player\\attack\\boy_attack_down_1.png", gp.tileSize, gp.tileSize * 2);
@@ -381,7 +381,7 @@ public class Player extends Entity {
 			attack_left1 = loadSprite("player\\attack\\boy_attack_left_1.png", gp.tileSize * 2, gp.tileSize);
 			attack_left2 = loadSprite("player\\attack\\boy_attack_left_2.png", gp.tileSize * 2, gp.tileSize);
 		}
-		if(this.currentWeapon.weaponType == WeaponType.Axe) {
+		if(this.currentWeapon.weaponType == ItemTypes.Weapon.Axe.class) {
 			attack_up1 = loadSprite("player\\attack\\boy_axe_up_1.png", gp.tileSize, gp.tileSize * 2);
 			attack_up2 = loadSprite("player\\attack\\boy_axe_up_2.png", gp.tileSize, gp.tileSize * 2);
 			attack_down1 = loadSprite("player\\attack\\boy_axe_down_1.png", gp.tileSize, gp.tileSize * 2);

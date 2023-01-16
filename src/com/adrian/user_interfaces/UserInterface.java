@@ -53,7 +53,7 @@ public class UserInterface {
 	public int inventorySlotCol = 0;
 	public int inventorySlotRow = 0;
 	public final int inventoryMaxSlotX = 5; 
-	public int inventoryMaxSlotY = 1; 
+	public int inventoryMaxSlotY = 4; 
 	
 	
 	@SuppressWarnings("serial")

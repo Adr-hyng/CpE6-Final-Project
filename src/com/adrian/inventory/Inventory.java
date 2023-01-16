@@ -4,8 +4,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 import com.adrian.base.Item;
-import com.adrian.items.equipments.CommonSword;
-import com.adrian.items.equipments.WoodenShield;
+import com.adrian.base.ItemTypes;
 import com.adrian.user_interfaces.GamePanel;
 
 public class Inventory{
@@ -20,8 +19,8 @@ public class Inventory{
 	}
 	
 	public void setDefaultItems() {
-		this.addItem(new CommonSword(this.gp));
-		this.addItem(new WoodenShield(this.gp));
+		this.addItem(ItemTypes.Weapon.Sword.getCommonSword(gp));
+		this.addItem(ItemTypes.Shield.getWoodenShield(gp));
 	}
 	
 	public <T extends Item> void addItem(T item) {
