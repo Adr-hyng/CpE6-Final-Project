@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.adrian.GlobalTool;
+import com.adrian.base.Global;
 import com.adrian.user_interfaces.GamePanel;
 
 public class Tile {
@@ -15,8 +15,8 @@ public class Tile {
 	
 	public Tile(String imagePath, boolean collision, GamePanel gp) {
 		try {
-			this.image = ImageIO.read(new File(GlobalTool.assetsDirectory + "tiles\\" + imagePath));
-			this.image = GlobalTool.utilityTool.scaleImage(this.image, gp.tileSize, gp.tileSize);
+			this.image = ImageIO.read(new File(Global.assets + "tiles\\" + imagePath));
+			this.image = Global.util.scaleImage(this.image, gp.tileSize, gp.tileSize);
 			this.collision = collision;
 			
 		} catch (IOException e) {

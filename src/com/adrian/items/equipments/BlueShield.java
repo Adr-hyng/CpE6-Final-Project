@@ -1,8 +1,9 @@
 package com.adrian.items.equipments;
 
-import com.adrian.base.Shield;
+import com.adrian.items.base.Shield;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
+import com.adrian.utils.Sound;
 
 public class BlueShield extends Shield{
 	
@@ -21,7 +22,7 @@ public class BlueShield extends Shield{
 	
 	public void setDialogue (String text) {
 		gp.ui.currentDialogue = text;
-		gp.playSoundEffect(9);
+		Sound.ACHIEVE.playSE();
 		gp.gameState = GameState.Dialogue.state;
 	}
 

@@ -46,13 +46,19 @@ public class EventHandler {
 		}
 		
 		if (canTouchEvent) {
-			for(int i = 28; i <= 30; i++) {
-				if(hit(i, 12, "any")) {
-					this.damagePit(i, 12, GameState.Dialogue.state);
-				}
+			if(hit(37, 16, "any")) {
+				this.damagePit(37, 16, GameState.Dialogue.state);
 			}
 			
-			if(hit(28, 8, "up")) {
+			if(hit(38, 14, "any")) {
+				this.damagePit(38, 14, GameState.Dialogue.state);
+			}
+			
+			if(hit(37, 12, "any")) {
+				this.damagePit(37, 12, GameState.Dialogue.state);
+			}
+			
+			if(hit(23, 10, "up")) {
 				healingPool(28, 8, GameState.Dialogue.state);
 			}
 		}
@@ -87,7 +93,7 @@ public class EventHandler {
 	public void damagePit(int col, int row, int gameState) {
 		gp.ui.dialogueOffset.y = 7;
 		gp.gameState = gameState;
-		gp.ui.currentDialogue = "You fall into the water, and \ncan\'t swim";
+		gp.ui.currentDialogue = "You fell into a hole.";
 		gp.player.currentLife = 0;
 		canTouchEvent = false;
 	}
@@ -97,9 +103,13 @@ public class EventHandler {
 			gp.ui.dialogueOffset.y = 7;
 			gp.gameState = gameState;
 			int healAmount = 2;
-			gp.ui.currentDialogue = "The house healed you";
-			gp.player.currentLife = (gp.player.currentLife <= gp.player.maxLife - healAmount) ? (gp.player.currentLife + healAmount) : gp.player.maxLife;
+			int manaAmount = 2;
+			gp.ui.currentDialogue = "Mystical Tree magically \nhealed you.";
+			gp.player.currentLife += healAmount;
+			gp.player.currentMana += manaAmount;
 			gp.keyInput.haveKeyPressed.replace("ENTER", false);
+			gp.assetHandler.clearMonsters();
+			gp.assetHandler.setMonster();
 		}
 	}
 }

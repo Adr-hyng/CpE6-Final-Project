@@ -1,6 +1,6 @@
 Simple 2D Top Down Action-RPG Game
 
-Implemenetation Part: 26 / 40
+Implemenetation Part: 32 / 40
 
 Note: 
 - Assets belongs to the rightful owners. No copyright infringement intended, music and pics belong to the rightful owners.

@@ -1,6 +1,6 @@
 package com.adrian.items.equipments;
 
-import com.adrian.base.Shield;
+import com.adrian.items.base.Shield;
 import com.adrian.user_interfaces.GamePanel;
 
 public class WoodenShield extends Shield{

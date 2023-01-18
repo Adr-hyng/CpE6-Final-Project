@@ -5,8 +5,10 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.adrian.base.Global;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
+import com.adrian.utils.Sound;
 
 public class KeyHandler implements KeyListener{
 	GamePanel gp;
@@ -17,6 +19,7 @@ public class KeyHandler implements KeyListener{
 		put("A", false);
 		put("S", false);
 		put("D", false);
+		put("F", false);
 		put("ENTER", false);
 		put("SPACE", false);
 		put("ESC", false);
@@ -70,7 +73,7 @@ public class KeyHandler implements KeyListener{
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
-					gp.playMusic(0);
+					Sound.INTRO.playSE();
 					gp.gameState = GameState.Continue.state;
 				}
 				
@@ -98,25 +101,15 @@ public class KeyHandler implements KeyListener{
 			}
 			
 			if(code == KeyEvent.VK_ENTER) {
-				if(gp.ui.selectionY == 0) {
-					// MUSIC
-					gp.playMusic(0);
-					gp.newGame(gp.player, 1);
-					gp.player.maxLife = 12;
-					gp.player.currentLife = gp.player.maxLife;
+				int totalSelection = Global.util.getStartingClass().size() + 1;
+				String selectedClass = null;
+				if(gp.ui.selectionY != totalSelection) {
+					selectedClass = Global.util.getStartingClass().get(gp.ui.selectionY);
+					gp.newGame(gp.player, 1, selectedClass);
 					gp.gameState = GameState.Continue.state;
 				}
 				
-				else if(gp.ui.selectionY == 1) {
-					// MUSIC
-					gp.playMusic(0);
-					gp.newGame(gp.player, 1);
-					gp.player.maxLife = 6;
-					gp.player.currentLife = gp.player.maxLife;
-					gp.gameState = GameState.Continue.state;
-				}
-				
-				else if(gp.ui.selectionY == 3) {
+				else if(gp.ui.selectionY == totalSelection) {
 					gp.ui.titleScreenState = 0;
 					gp.ui.selectionY = 0;
 				}
@@ -141,6 +134,10 @@ public class KeyHandler implements KeyListener{
 			
 			if(code == KeyEvent.VK_ENTER && !gp.player.isMoving) {
 				haveKeyPressed.replace("ENTER", true);
+			}
+			
+			if(code == KeyEvent.VK_F && !gp.player.isMoving) {
+				haveKeyPressed.replace("F", true);
 			}
 		}
 		
@@ -178,25 +175,26 @@ public class KeyHandler implements KeyListener{
 		if (code == KeyEvent.VK_W) {
 			if(gp.ui.inventorySlotRow != 0) {
 				gp.ui.inventorySlotRow--;
-				gp.playSoundEffect(10);
+				Sound.CURSOR.playSE();
+//				gp.playSoundEffect(10);
 			}
 		}
 		if (code == KeyEvent.VK_A) {
 			if(gp.ui.inventorySlotCol != 0) {
 				gp.ui.inventorySlotCol--;
-				gp.playSoundEffect(10);
+				Sound.CURSOR.playSE();
 			}
 		}
 		if (code == KeyEvent.VK_S) {
 			if(gp.ui.inventorySlotRow != (gp.ui.inventoryMaxSlotY - 1) ) {
 				gp.ui.inventorySlotRow++;
-				gp.playSoundEffect(10);
+				Sound.CURSOR.playSE();
 			}
 		}
 		if (code == KeyEvent.VK_D) {
 			if(gp.ui.inventorySlotCol != (gp.ui.inventoryMaxSlotX - 1) ) {
 				gp.ui.inventorySlotCol++;
-				gp.playSoundEffect(10);
+				Sound.CURSOR.playSE();
 			}
 		}
 		
@@ -220,6 +218,10 @@ public class KeyHandler implements KeyListener{
 		}
 		if(code == KeyEvent.VK_D) {
 			haveKeyPressed.replace("D", false);
+		}
+		
+		if(code == KeyEvent.VK_F) {
+			haveKeyPressed.replace("F", false);
 		}
 		
 		if(code == KeyEvent.VK_SPACE) {

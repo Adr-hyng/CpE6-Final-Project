@@ -1,9 +1,10 @@
 package com.adrian.items.equipments;
 
-import com.adrian.base.ItemTypes;
-import com.adrian.base.Weapon;
+import com.adrian.items.base.ItemTypes;
+import com.adrian.items.base.Weapon;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
+import com.adrian.utils.Sound;
 
 public class RustyAxe extends Weapon{
 	public RustyAxe(GamePanel gp) {
@@ -24,7 +25,7 @@ public class RustyAxe extends Weapon{
 	
 	public void setDialogue (String text) {
 		gp.ui.currentDialogue = text;
-		gp.playSoundEffect(9);
+		Sound.ACHIEVE.playSE();
 		gp.gameState = GameState.Dialogue.state;
 	}
 }

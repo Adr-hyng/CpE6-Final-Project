@@ -1,6 +1,6 @@
 package com.adrian.collisions;
 
-import com.adrian.base.Entity;
+import com.adrian.entity.base.Entity;
 import com.adrian.user_interfaces.GamePanel;
 
 public class CollisionHandler {
@@ -59,10 +59,9 @@ public class CollisionHandler {
 		
 		for(int i = 0; i < gp.itemObjects.length; i++) {
 			if(gp.itemObjects[i] == null) continue;
-			
 			entity.solidArea.x = (int) (entity.worldPosition.x + entity.solidArea.x);
 			entity.solidArea.y = (int) (entity.worldPosition.y + entity.solidArea.y);
-			
+
 			gp.itemObjects[i].solidArea.x = (int) (gp.itemObjects[i].worldPosition.x + gp.itemObjects[i].solidArea.x);
 			gp.itemObjects[i].solidArea.y = (int) (gp.itemObjects[i].worldPosition.y + gp.itemObjects[i].solidArea.y);
 			
@@ -83,7 +82,6 @@ public class CollisionHandler {
 			gp.itemObjects[i].solidArea.x = gp.itemObjects[i].solidAreaDefaultX;
 			gp.itemObjects[i].solidArea.y = gp.itemObjects[i].solidAreaDefaultY;
 		}
-		
 		return index;
 	}
 	
@@ -96,8 +94,7 @@ public class CollisionHandler {
 			System.out.println(this.getClass().getName());
 		}
 		for(int i = 0; i < len; i++) {
-			if(otherEntities[i] == null) continue;
-			if(otherEntities[i].hashCode() == callerEntity.hashCode()) continue;
+			if(otherEntities[i] == null || otherEntities[i].hashCode() == callerEntity.hashCode()) continue;
 			callerEntity.solidArea.x = (int) (callerEntity.worldPosition.x + callerEntity.solidArea.x);
 			callerEntity.solidArea.y = (int) (callerEntity.worldPosition.y + callerEntity.solidArea.y);
 			

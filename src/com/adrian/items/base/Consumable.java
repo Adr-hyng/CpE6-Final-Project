@@ -1,5 +1,6 @@
-package com.adrian.base;
+package com.adrian.items.base;
 
+import com.adrian.entity.base.Entity;
 import com.adrian.user_interfaces.GamePanel;
 
 public abstract class Consumable extends Item{

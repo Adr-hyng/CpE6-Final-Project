@@ -1,6 +1,6 @@
 package com.adrian.obstacles;
 
-import com.adrian.base.Entity;
+import com.adrian.entity.base.Entity;
 import com.adrian.user_interfaces.GamePanel;
 
 public class Chest extends Entity {

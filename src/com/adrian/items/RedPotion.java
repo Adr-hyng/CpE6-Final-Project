@@ -1,9 +1,10 @@
 package com.adrian.items;
 
-import com.adrian.base.Consumable;
-import com.adrian.base.Entity;
+import com.adrian.entity.base.Entity;
+import com.adrian.items.base.Consumable;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
+import com.adrian.utils.Sound;
 
 public class RedPotion extends Consumable {
 	public int restoreValue;
@@ -22,18 +23,13 @@ public class RedPotion extends Consumable {
 	
 	public void setDialogue(String text) {
 		gp.ui.currentDialogue = text;
-		gp.playSoundEffect(9);
+		Sound.ACHIEVE.playSE();
 		gp.gameState = GameState.Dialogue.state;
 	}
 	
 	@Override
 	public <T extends Entity> void useItem(T user) {
-		gp.gameState = GameState.Dialogue.state;
-		gp.ui.currentDialogue = "You drink the " + this.name + "!\n"
-				+ "It restored " + this.restoreValue + " HP.";
 		user.currentLife += restoreValue;
-		if(gp.player.currentLife > gp.player.maxLife) {
-			gp.player.currentLife = gp.player.maxLife;
-		}
+		Sound.POWERUP.playSE();
 	}
 }

@@ -1,26 +1,33 @@
-package com.adrian.monsters;
+package com.adrian.entity.monsters;
 
 import java.awt.Rectangle;
 import java.util.Random;
 
-import com.adrian.base.Monster;
+import com.adrian.entity.base.Monster;
+import com.adrian.entity.projectiles.Rock;
+import com.adrian.items.BronzeCoin;
+import com.adrian.items.base.Item;
+import com.adrian.items.equipments.BlueShield;
+import com.adrian.items.equipments.RustyAxe;
 import com.adrian.user_interfaces.GamePanel;
+import com.adrian.utils.WeightedRandom;
 
 public class GreenSlime extends Monster {
 	public GreenSlime(GamePanel gp) {
 		super(gp);
 		
-		name = "Green Slime";
-		movementSpeed = 1;
-		maxLife = 5;
-		currentLife = maxLife;
-		attack = 2;
-		defense = 0;
-		exp = 5;
+		this.name = "Green Slime";
+		this.movementSpeed = 1;
+		this.maxLife = 5;
+		this.currentLife = maxLife;
+		this.attack = 2;
+		this.defense = 0;
+		this.exp = 1;
+		this.projectile = new Rock(gp);
 		
-		solidArea = new Rectangle(3, 18, 42, 30);
-		solidAreaDefaultX = solidArea.x;
-		solidAreaDefaultY = solidArea.y;
+		this.solidArea = new Rectangle(3, 18, 42, 30);
+		this.solidAreaDefaultX = solidArea.x;
+		this.solidAreaDefaultY = solidArea.y;
 		this.getSprite();
 	}
 
@@ -65,6 +72,22 @@ public class GreenSlime extends Monster {
 			}
 			actionLockCounter = 0;
 		}
+		int i = new Random().nextInt(100) + 1;
+		if(i > 99 && !this.projectile.isAlive && this.projectileCooldown == this.projectileMaxCooldown) {
+			this.projectile.set(this.worldPosition.x, this.worldPosition.y, this.direction, this.isAlive, this);
+			gp.projectileList.add(projectile);
+			this.projectileCooldown = 0;
+		}
+	}
+	
+	@Override
+	protected <T extends Item> void checkDrop() {
+		WeightedRandom<T> itemDrops = new WeightedRandom<>() {{
+			addEntry((T) new BronzeCoin(gp), 60);
+			addEntry((T) new RustyAxe(gp), 20);
+			addEntry((T) new BlueShield(gp), 20);
+		}};
+		this.dropItem(itemDrops.getRandom());
 	}
 	
 	@Override

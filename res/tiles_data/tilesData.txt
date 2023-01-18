@@ -57,7 +57,7 @@ true
 water07.png
 true
 water08.png
-false
+true
 water09.png
 true
 water10.png
@@ -98,3 +98,5 @@ zztrunk_top_left.png
 true
 zztrunk_top_right.png
 true
+zzzhole00.png
+false

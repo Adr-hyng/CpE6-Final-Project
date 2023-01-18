@@ -11,17 +11,17 @@ import java.util.Comparator;
 
 import javax.swing.JPanel;
 
-import com.adrian.base.Entity;
-import com.adrian.base.Item;
-import com.adrian.base.Player;
 import com.adrian.collisions.CollisionHandler;
 import com.adrian.database.DatabaseManager;
+import com.adrian.entity.base.Entity;
+import com.adrian.entity.base.Player;
 import com.adrian.events.EventHandler;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.inputs.MouseHandler;
-import com.adrian.sounds.Sound;
+import com.adrian.items.base.Item;
 import com.adrian.tiles.TileManager;
 import com.adrian.utils.AssetSetter;
+import com.adrian.utils.Sound;
 import com.adrian.utils.Vector2D;
 
 public class GamePanel extends JPanel implements Runnable {
@@ -70,10 +70,6 @@ public class GamePanel extends JPanel implements Runnable {
 	// User Interface (UI)
 	public UserInterface ui = new UserInterface(this);
 	
-	// Sounds
-	Sound music = new Sound();
-	public Sound soundEffects = new Sound();
-	
 	// NPC
 	public Entity npcs[] = new Entity[10];
 	
@@ -84,18 +80,21 @@ public class GamePanel extends JPanel implements Runnable {
 	public Entity monsters[] = new Entity[20];
 	
 	// Item Objects
-	public Item itemObjects[] = new Item[10];
+	public Item itemObjects[] = new Item[100];
 	
 	// Entity List
 	public ArrayList<Entity> entityList = new ArrayList<>();
 	
 	// Player
-	final int respawnX = tileSize * 30;
-	final int respawnY = tileSize * 28;
-	public Player player = new Player(this, keyInput, new Vector2D(respawnX, respawnY));	
+	final int respawnX = tileSize * 23;
+	final int respawnY = tileSize * 22;
+	public Player player = new Player(this, keyInput, new Vector2D(respawnX, respawnY), "");	
+	public ArrayList<Entity> projectileList = new ArrayList<>();
 	
 	public int gameState;
 	public boolean canPlay = true;
+	
+	private String selectedClass; 
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(screenWidth + (tileSize / 2) - (originalTileSize / 2), screenHeight + tileSize - (originalTileSize / 2)));
@@ -138,8 +137,10 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 	}
 	
-	public void newGame(Entity entity, int index) {
+	public void newGame(Entity entity, int index, String selectedClass) {
 		// Reset
+		Sound.INTRO.play();
+		this.selectedClass = selectedClass;
 		worldSetup();
 		try {
 			connectDB();
@@ -192,8 +193,8 @@ public class GamePanel extends JPanel implements Runnable {
 		} catch (SQLException | NumberFormatException e) {
 			e.printStackTrace();
 		}
-		player = null;
-		player = new Player(this, keyInput, new Vector2D(respawnX, respawnY));
+		this.player = null;
+		this.player = new Player(this, keyInput, new Vector2D(respawnX, respawnY), this.selectedClass);
 		assetHandler.reset();
 		assetHandler.setItemObject();
 		assetHandler.setObstacle();
@@ -279,12 +280,10 @@ public class GamePanel extends JPanel implements Runnable {
 		Graphics2D g2 = (Graphics2D) g;
 		
 		if(gameState == GameState.Menu.state) {
-			// UI
 			ui.draw(g2);
 		}
 		
 		else {
-			// Tiles
 			tileManager.draw(g2);
 			
 			// Objects / NPC / Player
@@ -292,13 +291,11 @@ public class GamePanel extends JPanel implements Runnable {
 			assetHandler.compressEntities();
 			
 			Collections.sort(entityList, new Comparator<Entity>() {
-
 				@Override
 				public int compare(Entity e1, Entity e2) {
 					int result = Integer.compare((int) e1.worldPosition.y, (int) e2.worldPosition.y);
 					return result;
 				}
-				
 			});
 			
 			assetHandler.draw(g2);
@@ -308,22 +305,6 @@ public class GamePanel extends JPanel implements Runnable {
 			ui.draw(g2);
 			
 		}
-		
 		g2.dispose();
-	}
-	
-	public void playMusic(int i) {
-		music.setFile(i);
-		music.play();
-		music.loop();
-	}
-	
-	public void stopMusic() {
-		music.stop();
-	}
-	
-	public void playSoundEffect(int i) {
-		soundEffects.setFile(i);
-		soundEffects.play();
 	}
 }

@@ -1,10 +1,11 @@
-package com.adrian.base;
+package com.adrian.entity.base;
 
 import java.awt.Rectangle;
 import java.util.Random;
 
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
+import com.adrian.utils.Sound;
 
 public class NPC extends Entity{
 	public NPC(GamePanel gp, String[] dialogues) {
@@ -55,7 +56,7 @@ public class NPC extends Entity{
 	
 	public void setDialogue() {
 		gp.gameState = GameState.Dialogue.state;
-		gp.playSoundEffect(6);
+		Sound.SPEAK.playSE();
 	}
 	
 	protected void startMove() {

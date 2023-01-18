@@ -9,7 +9,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
-import com.adrian.GlobalTool;
+import com.adrian.base.Global;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.utils.Vector2D;
 
@@ -21,7 +21,7 @@ public class TileManager {
 	
 	InputStream textData;
 	BufferedReader openData;
-	String mapName = "test2";
+	String mapName = "worldV2";
 	
 	ArrayList<String> tilesPath = new ArrayList<>();
 	ArrayList<String> tilesCollisions = new ArrayList<>();
@@ -37,7 +37,7 @@ public class TileManager {
 	
 	public void getMapSize() {
 		try {
-			textData = new FileInputStream(GlobalTool.assetsDirectory + "maps\\" + this.mapName + ".txt");
+			textData = new FileInputStream(Global.assets + "maps\\" + this.mapName + ".txt");
 			openData = new BufferedReader(new InputStreamReader(textData));
 			String line = openData.readLine();
 			String maxTile[] = line.split(" ");
@@ -52,7 +52,7 @@ public class TileManager {
 	
 	public void loadMap() {
 		try {
-			BufferedReader fileReader = new BufferedReader(new FileReader(GlobalTool.assetsDirectory + "maps\\" + this.mapName + ".txt"));
+			BufferedReader fileReader = new BufferedReader(new FileReader(Global.assets + "maps\\" + this.mapName + ".txt"));
 			int col = 0;
 			int row = 0;
 			
@@ -82,7 +82,7 @@ public class TileManager {
 	
 	public void loadSpriteData(String spriteDataPath) {
 		try {
-			textData = new FileInputStream(GlobalTool.assetsDirectory + "tiles_data\\" + spriteDataPath);
+			textData = new FileInputStream(Global.assets + "tiles_data\\" + spriteDataPath);
 			openData = new BufferedReader(new InputStreamReader(textData));
 			String line;
 			
@@ -132,7 +132,7 @@ public class TileManager {
 			   worldView.x - (gp.tileSize * screenOffset) < gp.player.worldPosition.x + gp.player.screen.x &&
 			   worldView.y + (gp.tileSize * screenOffset) > gp.player.worldPosition.y - gp.player.screen.y &&
 			   worldView.y - (gp.tileSize * screenOffset) < gp.player.worldPosition.y + gp.player.screen.y) {
-				g.drawImage(tiles[tileNum].image, (int) screenView.x, (int) screenView.y, null);	
+				g.drawImage(tiles[tileNum].image, (int) screenView.x, (int) screenView.y, null);
 			}
 			
 			worldCol++;

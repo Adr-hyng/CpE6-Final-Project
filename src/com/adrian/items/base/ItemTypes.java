@@ -1,4 +1,4 @@
-package com.adrian.base;
+package com.adrian.items.base;
 
 import com.adrian.items.equipments.*;
 import com.adrian.user_interfaces.GamePanel;
@@ -42,6 +42,12 @@ public interface ItemTypes{
 	interface Consumable{
 		enum Potion{
 			RedPotion();
+		}
+	}
+	
+	interface NotObtainable{
+		enum Coin{
+			BronzeCoin();
 		}
 	}
 }

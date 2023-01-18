@@ -1,4 +1,4 @@
-package com.adrian.base;
+package com.adrian.entity.base;
 
 import com.adrian.user_interfaces.GamePanel;
 
@@ -11,5 +11,5 @@ public class Monster extends Entity{
 	@Override
 	protected void getSprite() {
 	}
-
+	
 }

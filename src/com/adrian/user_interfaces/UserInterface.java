@@ -16,8 +16,9 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
-import com.adrian.GlobalTool;
+import com.adrian.base.Global;
 import com.adrian.items.Heart;
+import com.adrian.items.ManaCrystal;
 import com.adrian.utils.Vector2D;
 
 public class UserInterface {
@@ -25,7 +26,8 @@ public class UserInterface {
 	Graphics2D g2;
 	
 	// Player
-	BufferedImage fullHeart, halfHeart, blankHeart;
+	BufferedImage fullHeart, halfHeart, emptyHeart;
+	BufferedImage fullMana, emptyMana;
 	
 	Font arial_40, arial_80B;
 	Font futilePro, matchupPro;
@@ -68,8 +70,9 @@ public class UserInterface {
 		}};
 		
 		this.classOption = new ArrayList<>() {{
-			add("Fighter");
-			add("Rogue");
+			for(String availableClass: Global.util.getStartingClass()) {
+				add(availableClass);
+			}
 			add("Back");
 		}};
 		
@@ -81,15 +84,19 @@ public class UserInterface {
 		// CREATE HUD OBJECT
 		Heart heart = new Heart(gp);
 		fullHeart = heart.image;
-		halfHeart = heart.halfHeartImage;
-		blankHeart = heart.emptyHeartImage;
+		halfHeart = heart.halfImage;
+		emptyHeart = heart.emptyImage;
+		
+		ManaCrystal mana = new ManaCrystal(gp);
+		fullMana = mana.image;
+		emptyMana = mana.emptyImage;
 		
 	}
 	
 	public Font createFont(String fontPath) {
 		Font font = null;
 		try {
-			InputStream openFont = new FileInputStream(GlobalTool.assetsDirectory + "fonts\\" + fontPath);
+			InputStream openFont = new FileInputStream(Global.assets + "fonts\\" + fontPath);
 			font = Font.createFont(Font.TRUETYPE_FONT, openFont);
 			openFont.close();
 			
@@ -114,13 +121,13 @@ public class UserInterface {
 		}
 		
 		else if(gp.gameState == GameState.Continue.state) {
-			drawPlayerLife();
+			drawPlayerHUD();
 			drawMessageLog();
 			
 		}
 		
 		else if (gp.gameState == GameState.Pause.state) {
-			drawPlayerLife();
+			drawPlayerHUD();
 			drawPauseScreen();
 		}
 		
@@ -316,7 +323,7 @@ public class UserInterface {
 		g2.drawImage(gp.player.currentShield.image, tailX - gp.tileSize, textY - 12, null);
 	}
 	
-	public void drawPlayerLife() {
+	public void drawPlayerHUD() {
 		int position = (gp.tileSize / 2) - gp.originalTileSize;
 		int width = gp.tileSize * (gp.player.maxLife / 2) + (gp.originalTileSize * 2);
 		drawSubWindow(position, position, width, (gp.tileSize * 2) - gp.originalTileSize, 255);
@@ -327,7 +334,7 @@ public class UserInterface {
 		
 		// Initialize Max Life
 		while (i < gp.player.maxLife / 2) {
-			g2.drawImage(blankHeart, x, y, null);
+			g2.drawImage(emptyHeart, x, y, null);
 			i++; 
 			x += gp.tileSize;
 		}
@@ -346,6 +353,30 @@ public class UserInterface {
 			}
 			i++; 
 			x += gp.tileSize;
+		}
+		
+		// Draw Max Mana
+		width = gp.tileSize * Math.round(gp.player.maxMana / 2) + (gp.originalTileSize * 6);
+		int initialX = gp.screenWidth - 215;
+		drawSubWindow(initialX, position, width, (gp.tileSize * 2) - gp.originalTileSize, 255);
+		
+		x = (int) (gp.screenWidth - Math.round(gp.tileSize * 1.5));
+		y = gp.tileSize / 2;
+		i = 0;
+		while(i < gp.player.maxMana) {
+			g2.drawImage(emptyMana, x, y, null);
+			i++;
+			x -= 35;
+		}
+		
+		// Draw Current Mana
+		x = (int) (gp.screenWidth - Math.round(gp.tileSize * 1.5));
+		y = gp.tileSize / 2;
+		i = 0;
+		while(i < gp.player.currentMana) {
+			g2.drawImage(fullMana, x, y, null);
+			i++;
+			x -= 35;
 		}
 	}
 

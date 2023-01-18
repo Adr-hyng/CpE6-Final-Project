@@ -1,4 +1,4 @@
-package com.adrian.base;
+package com.adrian.items.base;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -8,7 +8,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import com.adrian.GlobalTool;
+import com.adrian.base.Global;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.utils.Vector2D;
 
@@ -53,8 +53,8 @@ public abstract class Item{
 	protected BufferedImage loadSprite(final String imagePath) {
 		image = null;
 		try {
-			image = ImageIO.read(new File(GlobalTool.assetsDirectory + imagePath));
-			image = GlobalTool.utilityTool.scaleImage(image, gp.tileSize, gp.tileSize);
+			image = ImageIO.read(new File(Global.assets + imagePath));
+			image = Global.util.scaleImage(image, gp.tileSize, gp.tileSize);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

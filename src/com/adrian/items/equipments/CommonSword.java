@@ -1,7 +1,7 @@
 package com.adrian.items.equipments;
 
-import com.adrian.base.ItemTypes;
-import com.adrian.base.Weapon;
+import com.adrian.items.base.ItemTypes;
+import com.adrian.items.base.Weapon;
 import com.adrian.user_interfaces.GamePanel;
 
 public class CommonSword extends Weapon{

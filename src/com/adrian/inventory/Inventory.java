@@ -3,8 +3,8 @@ package com.adrian.inventory;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import com.adrian.base.Item;
-import com.adrian.base.ItemTypes;
+import com.adrian.items.base.Item;
+import com.adrian.items.base.ItemTypes;
 import com.adrian.user_interfaces.GamePanel;
 
 public class Inventory{

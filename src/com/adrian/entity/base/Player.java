@@ -1,14 +1,24 @@
-package com.adrian.base;
+package com.adrian.entity.base;
 
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+import com.adrian.base.Global;
+import com.adrian.entity.projectiles.Fireball;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.inventory.Inventory;
 import com.adrian.items.Key;
+import com.adrian.items.base.Coin;
+import com.adrian.items.base.Consumable;
+import com.adrian.items.base.Item;
+import com.adrian.items.base.ItemTypes;
+import com.adrian.items.base.Shield;
+import com.adrian.items.base.Weapon;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
+import com.adrian.utils.CharacterClass;
+import com.adrian.utils.Sound;
 import com.adrian.utils.Vector2D;
 
 public class Player extends Entity {
@@ -17,13 +27,14 @@ public class Player extends Entity {
 	KeyHandler keyInput;
 	
 	public Vector2D screen;
+	public String selectedClass;
 	
 	// Character Equipment
 	public Weapon currentWeapon;
 	public Shield currentShield;
 	public Inventory inventory;
 	
-	public Player(GamePanel gp, KeyHandler keyInput, Vector2D position) {
+	public Player(GamePanel gp, KeyHandler keyInput, Vector2D position, String selectedClass) {
 		super(gp);
 		this.screen = new Vector2D(
 				gp.screenWidth / 2 - (gp.tileSize), 
@@ -32,6 +43,7 @@ public class Player extends Entity {
 		this.gp = gp;
 		this.keyInput = keyInput;
 		this.worldPosition = position;
+		this.selectedClass = selectedClass;
 		
 		// Default Values
 		this.defaultValue();
@@ -46,6 +58,8 @@ public class Player extends Entity {
 		this.movementSpeed = 4;
 		this.maxLife = 6;
 		this.currentLife = maxLife;
+		this.maxMana = 5;
+		this.currentMana = maxMana;
 		this.direction = "down";
 		this.attackArea = new Rectangle(0, 0, 36, 36);
 		
@@ -53,13 +67,15 @@ public class Player extends Entity {
 		this.strength = 1;
 		this.dexterity = 1;
 		this.exp = 0;
-		this.nextLevelExp = 5;
+		this.nextLevelExp = 20;
 		this.coin = 0;
 		this.inventory = new Inventory(gp);
 		this.currentWeapon = this.inventory.getItem(0);
 		this.currentShield = this.inventory.getItem(1);
 		this.attack = getAttackStat();
 		this.defense = getDefenseStat();
+		this.projectile = new Fireball(gp);
+		this.classSelection();
 	}
 	
 	
@@ -73,6 +89,17 @@ public class Player extends Entity {
 		return defense = dexterity * currentShield.defenseValue;
 	}
 	
+	private void classSelection() {
+		if(this.selectedClass == CharacterClass.Selection.WARRIOR.name()) {
+			this.maxLife = 12;
+			this.currentLife = this.maxLife;
+		}
+		if(this.selectedClass == CharacterClass.Selection.MAGE.name()) {
+			this.maxLife = 6;
+			this.currentLife = this.maxLife;
+		}
+	}
+	
 	private void checkLevelUp() {
 		if(exp >= nextLevelExp) {
 			level++;
@@ -82,13 +109,11 @@ public class Player extends Entity {
 			dexterity++;
 			attack = getAttackStat();
 			defense = getDefenseStat();
-			gp.playSoundEffect(7);
-			
+			Sound.LEVELUP.playSE();
 			gp.gameState = GameState.Dialogue.state;
 			gp.ui.currentDialogue = "\tYou are level " + this.level + " now!";
 		}
 	}
-	
 	
 	public <T extends Item> void selectedItem() {
 		
@@ -108,12 +133,14 @@ public class Player extends Entity {
 			if(selectedItem.type == ItemTypes.Consumable.class) {
 				((Consumable) selectedItem).useItem(this);
 				this.inventory.removeItem(selectedItem);
+				if(!this.inventory.hasItem(selectedItem)) {
+					gp.gameState = GameState.Continue.state;
+				}
 			}
 		}
 	}
 	
 	private void plugController() {
-		
 		if(keyInput.haveKeyPressed.get("W")) {
 			direction = "up";
 			isMoving = true;
@@ -129,6 +156,20 @@ public class Player extends Entity {
 		else if(keyInput.haveKeyPressed.get("A")) {
 			direction = "left";
 			isMoving = true;
+		}
+		
+		else if(keyInput.haveKeyPressed.get("F") && 
+				!projectile.isAlive && 
+				this.projectileCooldown == this.projectileMaxCooldown && 
+				this.selectedClass == CharacterClass.Selection.MAGE.name() &&
+				this.projectile.haveResource(this)
+				) {
+			projectile.set(this.worldPosition.x, this.worldPosition.y, this.direction, true, this);
+			projectile.substractResource(this);
+			this.projectileCooldown = 0;
+			gp.projectileList.add(projectile);
+//			gp.playSoundEffect(11);
+			Sound.MAGIC.playSE();;
 		}
 		
 		else if(keyInput.haveKeyPressed.get("SPACE")) {
@@ -152,6 +193,7 @@ public class Player extends Entity {
 				!keyInput.haveKeyPressed.get("S") &&
 				!keyInput.haveKeyPressed.get("A") &&
 				!keyInput.haveKeyPressed.get("D") &&
+				!keyInput.haveKeyPressed.get("F") &&
 				!keyInput.haveKeyPressed.get("ENTER")) {
 			isMoving = false;
 			attacking = false;
@@ -160,11 +202,13 @@ public class Player extends Entity {
 	
 	private void gameOver() {
 		if(this.currentLife <= 0 && gp.gameState == GameState.Continue.state) {
-			gp.stopMusic();
+//			gp.stopMusic();
+			Global.util.Sound.stop();
 			gp.gameState = GameState.Menu.state;
 			gp.ui.titleScreenState = 0;
 			gp.ui.titleScreen = "Game Over";
-			gp.playSoundEffect(8);
+//			gp.playSoundEffect(8);
+			Sound.GAMEOVER.playSE();
 			gp.canPlay = false;
 		}
 	}
@@ -196,7 +240,7 @@ public class Player extends Entity {
 				solidArea.height = attackArea.height;
 				
 				int entityIndex = gp.collisionHandler.collideEntity(this, gp.monsters);
-				if ((max + min) / 2 == spriteCounter) getDamageFromMonster(entityIndex);
+				if ((max + min) / 2 == spriteCounter) getDamageFromMonster(entityIndex, this.attack);
 				
 				worldPosition.x = attackArea.x;
 				worldPosition.y = attackArea.y;
@@ -217,6 +261,14 @@ public class Player extends Entity {
 		if(index == 999) return;
 		Item obtainedItem = gp.itemObjects[index];
 		String text;
+		if(obtainedItem.type == ItemTypes.NotObtainable.class) {
+			int coinValue = ((Coin) obtainedItem).value;
+			this.coin += coinValue;
+			gp.ui.addMessage("Coin +" + coinValue);
+			Sound.COIN.playSE();
+			gp.itemObjects[index] = null;
+		}
+		
 		switch(obtainedItem.name) {
 		case "Red Potion":
 			text = "You obtained a " + obtainedItem.name + "!";
@@ -285,12 +337,14 @@ public class Player extends Entity {
 				case "Door":
 					Key key = new Key(this.gp);
 					if(this.inventory.hasItem(key)) {
-						gp.playSoundEffect(3);
+						Sound.UNLOCK.playSE();
+//						gp.playSoundEffect(3);
 						entity.setDialogue("Unlocked the door.");
 						entities[index] = null;
-						Item item = gp.player.inventory.popItem(key);
+						gp.player.inventory.popItem(key);
 					} else {
-						gp.playSoundEffect(6);
+						Sound.SPEAK.playSE();
+//						gp.playSoundEffect(6);
 						entity.setDialogue("Locked Door. You need 1 key\nto open this door.");
 					}
 					entity.trigger();
@@ -315,20 +369,21 @@ public class Player extends Entity {
 			switch (entity.name) {
 			case "Green Slime":
 				this.takeDamage(entity.attack);
-				gp.playSoundEffect(5);
+				Sound.PLAYER_HURT.playSE();
+//				gp.playSoundEffect(5);
 				invincible = true;
 				break;
 			}
 		}
 	}
 	
-	private void getDamageFromMonster(int index) {
+	// Put in Entity.class
+	public void getDamageFromMonster(int index, int damageTaken) {
 		if (index == 999) return;
 		Entity entity = gp.monsters[index];
-		
 		switch (entity.name) {
 		case "Green Slime":
-			entity.takeDamage(this.attack);
+			entity.takeDamage(damageTaken);
 			entity.damageReaction();
 			break;
 		}

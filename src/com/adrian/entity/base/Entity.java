@@ -1,4 +1,4 @@
-package com.adrian.base;
+package com.adrian.entity.base;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -6,11 +6,14 @@ import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 
-import com.adrian.GlobalTool;
+import com.adrian.base.Global;
+import com.adrian.items.base.Item;
 import com.adrian.user_interfaces.GamePanel;
+import com.adrian.utils.Sound;
 import com.adrian.utils.Vector2D;
 
 public abstract class Entity {
@@ -26,16 +29,21 @@ public abstract class Entity {
 	
 	protected String dialogues[] = new String[20];
 	protected int dialogueIndex = 0; 
+	protected Projectile projectile;
 	
 	public String name;
 	public Vector2D worldPosition;
+	
 	public int maxLife;
 	public int currentLife = 0;
+	public int maxMana;
+	public int currentMana = 0;
 	public double movementSpeed;
 	public String direction = "down";
 	public int type;
 	
 	// Attributes
+	public String id;
 	public int level;
 	public int strength;
 	public int dexterity;
@@ -52,6 +60,8 @@ public abstract class Entity {
 	public int invincibleCount = 0;
 	int dyingCounter = 0;
 	int healthBarCounter = 0;
+	protected int projectileCooldown;
+	protected final int projectileMaxCooldown = 30;
 	
 	// States
 	public boolean invincible = false;
@@ -71,14 +81,15 @@ public abstract class Entity {
 	
 	public Entity(GamePanel gp) {
 		this.gp = gp;
+		this.id = UUID.randomUUID().toString();
 	}
 	
 	protected abstract void getSprite();
 	protected BufferedImage loadSprite(final String imagePath, int width, int height) {
 		image = null;
 		try {
-			image = ImageIO.read(new File(GlobalTool.assetsDirectory + imagePath));
-			image = GlobalTool.utilityTool.scaleImage(image, width, height);
+			image = ImageIO.read(new File(Global.assets + imagePath));
+			image = Global.util.scaleImage(image, width, height);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -96,10 +107,13 @@ public abstract class Entity {
 	protected void contactPlayer() {
 		boolean contactPlayer = gp.collisionHandler.collidePlayer(this);
 		if (this instanceof Monster && contactPlayer == true) {
-			if(!gp.player.invincible) {
-				gp.player.currentLife --;
-				gp.player.invincible = true;
-			}
+			this.damagePlayer(this.attack);
+		}
+	}
+	
+	protected void damagePlayer(int damageTaken) {
+		if(!gp.player.invincible) {
+			gp.player.takeDamage(damageTaken);
 		}
 	}
 	
@@ -109,7 +123,7 @@ public abstract class Entity {
 			damageTaken = (damageTaken < 0) ? 0 : damageTaken;
 			gp.ui.addMessage(damageTaken + " damage!");
 			this.currentLife -= damageTaken;
-			gp.playSoundEffect(4);
+			Sound.PLAYER_HURT.playSE();
 			this.invincible = true;
 		}
 	}
@@ -120,9 +134,9 @@ public abstract class Entity {
 		startMove();
 		collisionOn = false;
 		try {
-			if(!walkthroughWalls) gp.collisionHandler.collideTile(this);
-		} catch (IndexOutOfBoundsException e) {
-			System.out.println("Tile ERrror. " + this.getClass().getName());
+			gp.collisionHandler.collideTile(this);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		if(!(this instanceof Player)) {
 			this.contactPlayer();
@@ -159,6 +173,13 @@ public abstract class Entity {
 				invincibleCount = 0;
 			}
 		}
+		
+		if(projectileCooldown < this.projectileMaxCooldown) {
+			projectileCooldown++;
+		}
+		
+		if(this.currentLife > this.maxLife) this.currentLife = this.maxLife;
+		if(this.currentMana > this.maxMana) this.currentMana = this.maxMana;
 	}
 	
 	public void draw(Graphics2D g2) {
@@ -239,31 +260,44 @@ public abstract class Entity {
 			if (invincible && invincibleCount % 5 == 0) {
 				showHealthBar = true;
 				healthBarCounter = 0;
-				GlobalTool.utilityTool.changeAlpha(g2, 0.3f);
+				Global.util.changeAlpha(g2, 0.3f);
 			}
 			if (isDying) {
 				dyingAnimation(g2);
 			}
 			g2.drawImage(image, (int) tempScreen.x, (int) tempScreen.y, null);
-			GlobalTool.utilityTool.changeAlpha(g2, 1f);
+			Global.util.changeAlpha(g2, 1f);
 		}
 	}
+	
+	protected <T extends Item> void dropItem(T droppedItem) {
+		for(int i = 0; i < gp.itemObjects.length; i++) {
+			if(gp.itemObjects[i] == null) {
+				gp.itemObjects[i] = droppedItem;
+				gp.itemObjects[i].worldPosition = this.worldPosition;
+				break;
+			}
+		}
+	}
+	
+	protected <T extends Item> void checkDrop() {}
 	
 	public void dyingAnimation(Graphics2D g2) {
 		int startInterval = 5;
 		dyingCounter++;
-		if (dyingCounter <= startInterval) GlobalTool.utilityTool.changeAlpha(g2, 0f);
-		if (dyingCounter > startInterval * 1 && dyingCounter <= startInterval * 2) GlobalTool.utilityTool.changeAlpha(g2, 1f);
-		if (dyingCounter > startInterval * 2 && dyingCounter <= startInterval * 3) GlobalTool.utilityTool.changeAlpha(g2, 0f);
-		if (dyingCounter > startInterval * 3 && dyingCounter <= startInterval * 4) GlobalTool.utilityTool.changeAlpha(g2, 1f);
-		if (dyingCounter > startInterval * 4 && dyingCounter <= startInterval * 5) GlobalTool.utilityTool.changeAlpha(g2, 0f);
-		if (dyingCounter > startInterval * 5 && dyingCounter <= startInterval * 6) GlobalTool.utilityTool.changeAlpha(g2, 1f);
-		if (dyingCounter > startInterval * 6 && dyingCounter <= startInterval * 7) GlobalTool.utilityTool.changeAlpha(g2, 0f);
-		if (dyingCounter > startInterval * 7 && dyingCounter <= startInterval * 8) GlobalTool.utilityTool.changeAlpha(g2, 1f);
+		if (dyingCounter <= startInterval) Global.util.changeAlpha(g2, 0f);
+		if (dyingCounter > startInterval * 1 && dyingCounter <= startInterval * 2) Global.util.changeAlpha(g2, 1f);
+		if (dyingCounter > startInterval * 2 && dyingCounter <= startInterval * 3) Global.util.changeAlpha(g2, 0f);
+		if (dyingCounter > startInterval * 3 && dyingCounter <= startInterval * 4) Global.util.changeAlpha(g2, 1f);
+		if (dyingCounter > startInterval * 4 && dyingCounter <= startInterval * 5) Global.util.changeAlpha(g2, 0f);
+		if (dyingCounter > startInterval * 5 && dyingCounter <= startInterval * 6) Global.util.changeAlpha(g2, 1f);
+		if (dyingCounter > startInterval * 6 && dyingCounter <= startInterval * 7) Global.util.changeAlpha(g2, 0f);
+		if (dyingCounter > startInterval * 7 && dyingCounter <= startInterval * 8) Global.util.changeAlpha(g2, 1f);
 		
 		if (dyingCounter > startInterval * 8) {
 			isDying = false;
 			isAlive = false;
+			this.checkDrop();;
 		}
 	}
 }

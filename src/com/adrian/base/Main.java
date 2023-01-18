@@ -1,4 +1,4 @@
-package com.adrian;
+package com.adrian.base;
 
 import java.awt.Rectangle;
 import java.awt.event.WindowAdapter;

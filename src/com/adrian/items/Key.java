@@ -1,8 +1,9 @@
 package com.adrian.items;
 
-import com.adrian.base.Item;
+import com.adrian.items.base.Item;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
+import com.adrian.utils.Sound;
 
 public class Key extends Item {
 	
@@ -19,7 +20,7 @@ public class Key extends Item {
 	
 	public void setDialogue(String text) {
 		gp.ui.currentDialogue = text;
-		gp.playSoundEffect(9);
+		Sound.ACHIEVE.playSE();
 		gp.gameState = GameState.Dialogue.state;
 	}
 }
