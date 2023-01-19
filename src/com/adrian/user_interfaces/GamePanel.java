@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +15,10 @@ import javax.swing.JPanel;
 import com.adrian.collisions.CollisionHandler;
 import com.adrian.database.DatabaseManager;
 import com.adrian.entity.base.Entity;
+import com.adrian.entity.base.InteractiveTile;
+import com.adrian.entity.base.Particle;
 import com.adrian.entity.base.Player;
+import com.adrian.entity.base.Projectile;
 import com.adrian.events.EventHandler;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.inputs.MouseHandler;
@@ -22,7 +26,7 @@ import com.adrian.items.base.Item;
 import com.adrian.tiles.TileManager;
 import com.adrian.utils.AssetSetter;
 import com.adrian.utils.Sound;
-import com.adrian.utils.Vector2D;
+import com.adrian.utils.Vector2DUtil;
 
 public class GamePanel extends JPanel implements Runnable {
 	
@@ -33,10 +37,17 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	// Screen Resolution
 	public final int tileSize = originalTileSize * scale;
-	public final int maxScreenCol = 16; //16
+	public final int maxScreenCol = 20; //16
 	public final int maxScreenRow = 12; // 12
 	public final int screenWidth = tileSize * maxScreenCol;
 	public final int screenHeight = tileSize * maxScreenRow;
+	
+	// FULL SCREEN
+//	int fullScreenWidth = screenWidth;
+//	int fullScreenHeight = screenHeight;
+//	BufferedImage tempScreen;
+//	Graphics2D g2;
+	
 	
 	// World Settings
 	public int maxWorldCol;
@@ -82,14 +93,20 @@ public class GamePanel extends JPanel implements Runnable {
 	// Item Objects
 	public Item itemObjects[] = new Item[100];
 	
+	// Interactable Tiles
+	public InteractiveTile interactableTiles[] = new InteractiveTile[50];
+	
 	// Entity List
 	public ArrayList<Entity> entityList = new ArrayList<>();
+	
+	// Particles
+	public ArrayList<Particle> particleList = new ArrayList<>();
 	
 	// Player
 	final int respawnX = tileSize * 23;
 	final int respawnY = tileSize * 22;
-	public Player player = new Player(this, keyInput, new Vector2D(respawnX, respawnY), "");	
-	public ArrayList<Entity> projectileList = new ArrayList<>();
+	public Player player = new Player(this, keyInput, new Vector2DUtil(respawnX, respawnY), "");	
+	public ArrayList<Projectile> projectileList = new ArrayList<>();
 	
 	public int gameState;
 	public boolean canPlay = true;
@@ -194,13 +211,19 @@ public class GamePanel extends JPanel implements Runnable {
 			e.printStackTrace();
 		}
 		this.player = null;
-		this.player = new Player(this, keyInput, new Vector2D(respawnX, respawnY), this.selectedClass);
+		this.player = new Player(this, keyInput, new Vector2DUtil(respawnX, respawnY), this.selectedClass);
 		assetHandler.reset();
-		assetHandler.setItemObject();
-		assetHandler.setObstacle();
-		assetHandler.setNPC();
-		assetHandler.setMonster();
+		assetHandler.setItemObjects();
+		assetHandler.setObstacles();
+		assetHandler.setNPCs();
+		assetHandler.setMonsters();
+		assetHandler.setInteractableTiles();
 		gameState = GameState.Menu.state;
+		
+		// FULL SCREEN
+//		this.tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
+//		g2 = (Graphics2D) tempScreen.getGraphics();
+		
 	}
 	
 	public void startGameThread() {
@@ -240,28 +263,7 @@ public class GamePanel extends JPanel implements Runnable {
 		
 		else if(gameState == GameState.Continue.state) {
 			player.update();
-			for(int i = 0; i < npcs.length; i++) {
-				if(npcs[i] != null) {
-					npcs[i].update();
-				}
-			}
-			
-			for(int i = 0; i < obstacles.length; i++) {
-				if(obstacles[i] != null) {
-					obstacles[i].update();
-				}
-			}
-			
-			for(int i = 0; i < monsters.length; i++) {
-				if(monsters[i] != null) {
-					if (monsters[i].isAlive && !monsters[i].isDying) {
-						monsters[i].update();
-					}
-					else if (!monsters[i].isAlive) {
-						monsters[i] = null;
-					}
-				}
-			}
+			assetHandler.update();
 		}
 		else if(gameState == GameState.Pause.state) {
 
@@ -285,6 +287,12 @@ public class GamePanel extends JPanel implements Runnable {
 		
 		else {
 			tileManager.draw(g2);
+			
+			for(int i = 0; i < interactableTiles.length; i++) {
+				if(interactableTiles[i] != null) {
+					interactableTiles[i].draw(g2);
+				}
+			}
 			
 			// Objects / NPC / Player
 			entityList.add(player);

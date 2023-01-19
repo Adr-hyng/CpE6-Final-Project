@@ -19,14 +19,14 @@ import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.CharacterClass;
 import com.adrian.utils.Sound;
-import com.adrian.utils.Vector2D;
+import com.adrian.utils.Vector2DUtil;
 
 public class Player extends Entity {
 	
 	GamePanel gp;
 	KeyHandler keyInput;
 	
-	public Vector2D screen;
+	public Vector2DUtil screen;
 	public String selectedClass;
 	
 	// Character Equipment
@@ -34,9 +34,9 @@ public class Player extends Entity {
 	public Shield currentShield;
 	public Inventory inventory;
 	
-	public Player(GamePanel gp, KeyHandler keyInput, Vector2D position, String selectedClass) {
+	public Player(GamePanel gp, KeyHandler keyInput, Vector2DUtil position, String selectedClass) {
 		super(gp);
-		this.screen = new Vector2D(
+		this.screen = new Vector2DUtil(
 				gp.screenWidth / 2 - (gp.tileSize), 
 				gp.screenHeight / 2 - (gp.tileSize));
 		
@@ -77,7 +77,6 @@ public class Player extends Entity {
 		this.projectile = new Fireball(gp);
 		this.classSelection();
 	}
-	
 	
 	// PUT THIS SOMEWHERE ELSE like PlayerStats Manager
 	private int getAttackStat() {
@@ -202,12 +201,10 @@ public class Player extends Entity {
 	
 	private void gameOver() {
 		if(this.currentLife <= 0 && gp.gameState == GameState.Continue.state) {
-//			gp.stopMusic();
 			Global.util.Sound.stop();
 			gp.gameState = GameState.Menu.state;
 			gp.ui.titleScreenState = 0;
 			gp.ui.titleScreen = "Game Over";
-//			gp.playSoundEffect(8);
 			Sound.GAMEOVER.playSE();
 			gp.canPlay = false;
 		}
@@ -241,6 +238,9 @@ public class Player extends Entity {
 				
 				int entityIndex = gp.collisionHandler.collideEntity(this, gp.monsters);
 				if ((max + min) / 2 == spriteCounter) getDamageFromMonster(entityIndex, this.attack);
+				
+				int interactiveTileIndex = gp.collisionHandler.collideEntity(this, gp.interactableTiles);
+				if ((max + min) / 2 == spriteCounter) interactTile(interactiveTileIndex);
 				
 				worldPosition.x = attackArea.x;
 				worldPosition.y = attackArea.y;
@@ -362,6 +362,19 @@ public class Player extends Entity {
 		}
 	}
 	
+	private void interactTile(int index) {
+		if(index == 999 || !gp.interactableTiles[index].isDestructible || !gp.interactableTiles[index].isItemValid(this, ItemTypes.Weapon.Axe.class)) return;
+		gp.interactableTiles[index].currentLife--;
+		gp.interactableTiles[index].invincible = true;
+		gp.interactableTiles[index].generateParticle(
+				gp.interactableTiles[index], 
+				gp.interactableTiles[index]
+		);
+		if(gp.interactableTiles[index].currentLife == 0) {
+			gp.interactableTiles[index] = gp.interactableTiles[index].getDestroyedForm();
+		}
+	}
+	
 	protected void contactMonster(int index) {
 		if (index == 999) return;
 		Entity entity = gp.monsters[index];
@@ -407,6 +420,7 @@ public class Player extends Entity {
 			int npcIndex = gp.collisionHandler.collideEntity(this, gp.npcs);
 			int obstacleIndex = gp.collisionHandler.collideEntity(this, gp.obstacles);
 			int monsterIndex = gp.collisionHandler.collideEntity(this, gp.monsters);
+			gp.collisionHandler.collideEntity(this, gp.interactableTiles);
 			contactMonster(monsterIndex);
 			interactEntity(npcIndex, gp.npcs);
 			interactEntity(obstacleIndex, gp.obstacles);
@@ -461,7 +475,7 @@ public class Player extends Entity {
 	
 	public void draw(Graphics2D g) {
 		image = null;
-		Vector2D tempScreen = new Vector2D(screen.x, screen.y);
+		Vector2DUtil tempScreen = new Vector2DUtil(screen.x, screen.y);
 		
 		switch(direction) {
 		case "up":

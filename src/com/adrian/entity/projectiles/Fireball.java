@@ -1,5 +1,7 @@
 package com.adrian.entity.projectiles;
 
+import java.awt.Color;
+
 import com.adrian.entity.base.Entity;
 import com.adrian.entity.base.Projectile;
 import com.adrian.user_interfaces.GamePanel;
@@ -13,7 +15,7 @@ public class Fireball extends Projectile{
 		this.gp = gp;
 		
 		this.name = "Fireball";
-		this.movementSpeed = 10;
+		this.movementSpeed = 5;
 		this.maxLife = 80;
 		this.currentLife = this.maxLife;
 		this.attack = 10;
@@ -42,5 +44,29 @@ public class Fireball extends Projectile{
 	@Override
 	public void substractResource(Entity user) {
 		user.currentMana -= this.manaCost;
+	}
+	
+	@Override
+	public Color getParticleColor() {
+		Color color = new Color(240, 50, 0);
+		return color;
+	}
+	
+	@Override
+	public int getParticleSize() {
+		int size = 10;
+		return size;
+	}
+	
+	@Override
+	public int getParticleSpeed() {
+		int speed = 1;
+		return speed;
+	}
+	
+	@Override
+	public int getParticleMaxLife() {
+		int maxLife = 10;
+		return maxLife;
 	}
 }

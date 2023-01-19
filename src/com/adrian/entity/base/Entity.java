@@ -14,7 +14,7 @@ import com.adrian.base.Global;
 import com.adrian.items.base.Item;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.utils.Sound;
-import com.adrian.utils.Vector2D;
+import com.adrian.utils.Vector2DUtil;
 
 public abstract class Entity {
 	// DEBUG
@@ -32,7 +32,7 @@ public abstract class Entity {
 	protected Projectile projectile;
 	
 	public String name;
-	public Vector2D worldPosition;
+	public Vector2DUtil worldPosition;
 	
 	public int maxLife;
 	public int currentLife = 0;
@@ -96,6 +96,34 @@ public abstract class Entity {
 		return image;
 	}
 	
+	public Color getParticleColor() {
+		return null;
+	}
+	
+	public int getParticleSize() {
+		return 0;
+	}
+	
+	public int getParticleSpeed() {
+		return 0;
+	}
+	
+	public int getParticleMaxLife() {
+		return 0;
+	}
+	
+	public void generateParticle(Entity generator, Entity target) {
+		Color color = generator.getParticleColor();
+		int size = generator.getParticleSize();
+		int speed = generator.getParticleSpeed();
+		int maxLife = generator.getParticleMaxLife();
+		
+		gp.particleList.add(new Particle(gp, target, color, size, speed, maxLife, -2, -1));
+		gp.particleList.add(new Particle(gp, target, color, size, speed, maxLife, 2, -1));
+		gp.particleList.add(new Particle(gp, target, color, size, speed, maxLife, -2, 1));
+		gp.particleList.add(new Particle(gp, target, color, size, speed, maxLife, 2, 1));
+	}
+	
 	// Set Dialogue Speech to NPC / Obstacles
 	protected void setDialogue() {}
 	protected void setDialogue(String text) {}
@@ -143,6 +171,7 @@ public abstract class Entity {
 			gp.collisionHandler.collideEntity(this, gp.npcs);
 			gp.collisionHandler.collideEntity(this, gp.monsters);
 			gp.collisionHandler.collideEntity(this, gp.obstacles);
+			gp.collisionHandler.collideEntity(this, gp.interactableTiles);
 			gp.collisionHandler.collideObject(this, false);
 		}
 		if(!this.collisionOn && isMoving) {
@@ -183,7 +212,7 @@ public abstract class Entity {
 	}
 	
 	public void draw(Graphics2D g2) {
-		Vector2D screenView = new Vector2D(worldPosition.x - gp.player.worldPosition.x + gp.player.screen.x, worldPosition.y - gp.player.worldPosition.y + gp.player.screen.y);
+		Vector2DUtil screenView = new Vector2DUtil(worldPosition.x - gp.player.worldPosition.x + gp.player.screen.x, worldPosition.y - gp.player.worldPosition.y + gp.player.screen.y);
 		// To remove black spots when chunk loading.
 		final int screenOffset = 2;
 		
@@ -192,7 +221,7 @@ public abstract class Entity {
 		   worldPosition.x - (gp.tileSize * screenOffset) < gp.player.worldPosition.x + gp.player.screen.x &&
 		   worldPosition.y + (gp.tileSize * screenOffset) > gp.player.worldPosition.y - gp.player.screen.y &&
 		   worldPosition.y - (gp.tileSize * screenOffset) < gp.player.worldPosition.y + gp.player.screen.y) {
-			Vector2D tempScreen = new Vector2D(screenView.x, screenView.y);
+			Vector2DUtil tempScreen = new Vector2DUtil(screenView.x, screenView.y);
 			
 			switch(direction) {
 			case "up":

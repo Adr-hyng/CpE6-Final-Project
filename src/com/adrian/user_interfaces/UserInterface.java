@@ -19,7 +19,7 @@ import javax.swing.ImageIcon;
 import com.adrian.base.Global;
 import com.adrian.items.Heart;
 import com.adrian.items.ManaCrystal;
-import com.adrian.utils.Vector2D;
+import com.adrian.utils.Vector2DUtil;
 
 public class UserInterface {
 	GamePanel gp;
@@ -33,7 +33,7 @@ public class UserInterface {
 	Font futilePro, matchupPro;
 	
 	public String currentDialogue = "";
-	public Vector2D dialogueOffset;
+	public Vector2DUtil dialogueOffset;
 	
 	public ArrayList<String> messages = new ArrayList<>();
 	public ArrayList<Integer> messageCounter = new ArrayList<>();
@@ -61,7 +61,7 @@ public class UserInterface {
 	@SuppressWarnings("serial")
 	public UserInterface(GamePanel gp) {
 		this.gp = gp;
-		this.dialogueOffset = new Vector2D(0, 0);
+		this.dialogueOffset = new Vector2DUtil(0, 0);
 		this.menuOption = new ArrayList<>() {{
 			add("Continue");
 			add("New Game");
@@ -443,7 +443,7 @@ public class UserInterface {
 	}
 	
 	private void createSubTitleText(String subTitle, int x, int y, int xOffset, int yOffset) {
-		// USE VECTOR2D
+		// USE Vector2DUtil
 		x = getCenterText(subTitle) + (xOffset * gp.tileSize);
 		y += gp.tileSize * yOffset;
 		g2.drawString(subTitle, x, y);
@@ -458,7 +458,7 @@ public class UserInterface {
 	}
 	
 	public void drawDialogScreen() {
-		// USE VECTOR2D or Rectangle
+		// USE Vector2DUtil or Rectangle
 		dialogBoxHeightOffset = (currentDialogue.length() / 29) + 2;
 		
 		int x = gp.tileSize * 2;

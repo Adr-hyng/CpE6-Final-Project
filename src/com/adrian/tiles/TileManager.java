@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import com.adrian.base.Global;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.utils.Vector2D;
+import com.adrian.utils.Vector2DUtil;
 
 public class TileManager {
 	// THIS RELIES TO THE MAP EDITOR WITH TILE DATA
@@ -121,8 +121,8 @@ public class TileManager {
 		while(worldCol < gp.maxWorldCol && worldRow < gp.maxWorldRow) {
 			int tileNum = mapTileNum[worldCol][worldRow];
 			
-			Vector2D worldView = new Vector2D(worldCol * gp.tileSize, worldRow * gp.tileSize);
-			Vector2D screenView = new Vector2D(worldView.x - gp.player.worldPosition.x + gp.player.screen.x, worldView.y - gp.player.worldPosition.y + gp.player.screen.y);
+			Vector2DUtil worldView = new Vector2DUtil(worldCol * gp.tileSize, worldRow * gp.tileSize);
+			Vector2DUtil screenView = new Vector2DUtil(worldView.x - gp.player.worldPosition.x + gp.player.screen.x, worldView.y - gp.player.worldPosition.y + gp.player.screen.y);
 			
 			// To remove black spots when chunk loading.
 			final int screenOffset = 2;

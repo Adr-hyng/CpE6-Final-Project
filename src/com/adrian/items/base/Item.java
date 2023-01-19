@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 
 import com.adrian.base.Global;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.utils.Vector2D;
+import com.adrian.utils.Vector2DUtil;
 
 
 
@@ -23,7 +23,7 @@ public abstract class Item{
 	public Class<?> type;
 	public int textDescriptionLimit = 30;
 	public boolean collision = false;
-	public Vector2D worldPosition;
+	public Vector2DUtil worldPosition;
 	public Rectangle solidArea = new Rectangle(0, 0, 48, 48);
 	public int solidAreaDefaultX = 0;
 	public int solidAreaDefaultY = 0;
@@ -36,7 +36,7 @@ public abstract class Item{
 	public void setDialogue(String text) {}
 
 	public void draw(Graphics2D g) {
-		Vector2D screenView = new Vector2D(worldPosition.x - gp.player.worldPosition.x + gp.player.screen.x, worldPosition.y - gp.player.worldPosition.y + gp.player.screen.y);
+		Vector2DUtil screenView = new Vector2DUtil(worldPosition.x - gp.player.worldPosition.x + gp.player.screen.x, worldPosition.y - gp.player.worldPosition.y + gp.player.screen.y);
 
 		// To remove black spots when chunk loading.
 		final int screenOffset = 2;

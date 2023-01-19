@@ -19,7 +19,7 @@ public class Inventory{
 	}
 	
 	public void setDefaultItems() {
-		this.addItem(ItemTypes.Weapon.Sword.getCommonSword(gp));
+		this.addItem(ItemTypes.Weapon.Axe.getRustyAxe(gp));
 		this.addItem(ItemTypes.Shield.getWoodenShield(gp));
 	}
 	

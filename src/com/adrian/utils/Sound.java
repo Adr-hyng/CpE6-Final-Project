@@ -22,6 +22,7 @@ public enum Sound{
 	GAMEOVER("sounds\\\\gameover"),
 	ACHIEVE("sounds\\\\obtained_item"),
 	CURSOR("sounds\\\\cursor"),
+	CUT("sounds\\\\cuttree"),
 	MAGIC("sounds\\\\burning");
 	static {
 		

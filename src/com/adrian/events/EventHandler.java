@@ -2,13 +2,13 @@ package com.adrian.events;
 
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.user_interfaces.GameState;
-import com.adrian.utils.Vector2D;
+import com.adrian.utils.Vector2DUtil;
 
 public class EventHandler {
 	GamePanel gp;
 	EventRect rect[][];
 	
-	Vector2D previousEvent = new Vector2D(0, 0);
+	Vector2DUtil previousEvent = new Vector2DUtil(0, 0);
 	boolean canTouchEvent = true;
 	
 	public EventHandler (GamePanel gp) {
@@ -35,7 +35,7 @@ public class EventHandler {
 	}
 	
 	public void checkEvent() {
-		Vector2D lastPositionExecutedDistance = new Vector2D(
+		Vector2DUtil lastPositionExecutedDistance = new Vector2DUtil(
 				Math.abs(gp.player.worldPosition.x - previousEvent.x),
 				Math.abs(gp.player.worldPosition.y - previousEvent.y));
 		
@@ -77,7 +77,7 @@ public class EventHandler {
 			if(gp.player.direction.contentEquals(directionFacing) || directionFacing.contentEquals("any")) {
 				hit = true;
 				
-				previousEvent = new Vector2D(gp.player.worldPosition.x, gp.player.worldPosition.y);
+				previousEvent = new Vector2DUtil(gp.player.worldPosition.x, gp.player.worldPosition.y);
 				
 			}
 		}
@@ -109,7 +109,7 @@ public class EventHandler {
 			gp.player.currentMana += manaAmount;
 			gp.keyInput.haveKeyPressed.replace("ENTER", false);
 			gp.assetHandler.clearMonsters();
-			gp.assetHandler.setMonster();
+			gp.assetHandler.setMonsters();
 		}
 	}
 }
