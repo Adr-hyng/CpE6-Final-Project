@@ -5,10 +5,8 @@ import java.util.Random;
 
 import com.adrian.entity.base.Monster;
 import com.adrian.entity.projectiles.Rock;
-import com.adrian.items.BronzeCoin;
 import com.adrian.items.base.Item;
-import com.adrian.items.equipments.BlueShield;
-import com.adrian.items.equipments.RustyAxe;
+import com.adrian.items.base.ItemTypes;
 import com.adrian.user_interfaces.GamePanel;
 import com.adrian.utils.WeightedRandom;
 
@@ -81,11 +79,10 @@ public class GreenSlime extends Monster {
 	}
 	
 	@Override
-	protected <T extends Item> void checkDrop() {
-		WeightedRandom<T> itemDrops = new WeightedRandom<>() {{
-			addEntry((T) new BronzeCoin(gp), 60);
-			addEntry((T) new RustyAxe(gp), 20);
-			addEntry((T) new BlueShield(gp), 20);
+	protected void checkDrop() {
+		WeightedRandom<Item> itemDrops = new WeightedRandom<>() {{
+			addEntry(ItemTypes.NotObtainable.Coin.getBronzeCoin(gp), 90);
+			addEntry(ItemTypes.Weapon.Sword.getCommonSword(gp), 10);
 		}};
 		this.dropItem(itemDrops.getRandom());
 	}

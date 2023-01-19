@@ -309,7 +309,7 @@ public abstract class Entity {
 		}
 	}
 	
-	protected <T extends Item> void checkDrop() {}
+	protected void checkDrop() {}
 	
 	public void dyingAnimation(Graphics2D g2) {
 		int startInterval = 5;

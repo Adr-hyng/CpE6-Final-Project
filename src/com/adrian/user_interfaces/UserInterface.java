@@ -16,6 +16,7 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 
+import com.adrian.base.GameState;
 import com.adrian.base.Global;
 import com.adrian.items.Heart;
 import com.adrian.items.ManaCrystal;
@@ -138,6 +139,21 @@ public class UserInterface {
 			drawPlayerStat();
 			drawPlayerInventory();
 		}
+		else if(gp.gameState == GameState.ShowOption.state) {
+			drawOptionScreen();
+		}
+	}
+	
+	public void drawOptionScreen() {
+		g2.setColor(Color.white);
+		g2.setFont(g2.getFont().deriveFont(32F));
+		
+		int frameX = gp.tileSize * 6;
+		int frameY = gp.tileSize;
+		int frameWidth = gp.tileSize * 8;
+		int frameHeight = gp.tileSize * 10;
+		this.drawSubWindow(frameX, frameY, frameWidth, frameHeight, 255);
+		
 	}
 	
 	public void drawMessageLog() {
@@ -165,7 +181,7 @@ public class UserInterface {
 	}
 	
 	public void drawPlayerInventory() {
-		int frameX = gp.tileSize * 9;
+		int frameX = gp.tileSize * 12;
 		int frameY = gp.tileSize;
 		int frameWidth = gp.tileSize * (inventoryMaxSlotX + 1);
 		int frameHeight = gp.tileSize * (inventoryMaxSlotY + 1);
@@ -233,7 +249,7 @@ public class UserInterface {
 	}
 	
 	public void drawPlayerStat() {
-		final int frameX = gp.tileSize * 1;
+		final int frameX = gp.tileSize * 2;
 		final int frameY = gp.tileSize;
 		final int frameWidth = gp.tileSize * 5;
 		final int frameHeight = gp.tileSize * 10;

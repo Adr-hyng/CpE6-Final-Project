@@ -4,7 +4,7 @@ import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
-import com.adrian.base.Global;
+import com.adrian.base.GameState;
 import com.adrian.entity.projectiles.Fireball;
 import com.adrian.inputs.KeyHandler;
 import com.adrian.inventory.Inventory;
@@ -16,8 +16,6 @@ import com.adrian.items.base.ItemTypes;
 import com.adrian.items.base.Shield;
 import com.adrian.items.base.Weapon;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.user_interfaces.GameState;
-import com.adrian.utils.CharacterClass;
 import com.adrian.utils.Sound;
 import com.adrian.utils.Vector2DUtil;
 
@@ -167,7 +165,6 @@ public class Player extends Entity {
 			projectile.substractResource(this);
 			this.projectileCooldown = 0;
 			gp.projectileList.add(projectile);
-//			gp.playSoundEffect(11);
 			Sound.MAGIC.playSE();;
 		}
 		
@@ -201,7 +198,7 @@ public class Player extends Entity {
 	
 	private void gameOver() {
 		if(this.currentLife <= 0 && gp.gameState == GameState.Continue.state) {
-			Global.util.Sound.stop();
+			Sound.INTRO.stop();
 			gp.gameState = GameState.Menu.state;
 			gp.ui.titleScreenState = 0;
 			gp.ui.titleScreen = "Game Over";

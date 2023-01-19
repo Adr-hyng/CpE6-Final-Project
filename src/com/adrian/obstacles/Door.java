@@ -2,9 +2,9 @@ package com.adrian.obstacles;
 
 import java.awt.Rectangle;
 
+import com.adrian.base.GameState;
 import com.adrian.entity.base.Entity;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.user_interfaces.GameState;
 
 public class Door extends Entity {
 	

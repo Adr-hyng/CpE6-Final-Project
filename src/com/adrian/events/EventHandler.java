@@ -1,7 +1,7 @@
 package com.adrian.events;
 
+import com.adrian.base.GameState;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.Vector2DUtil;
 
 public class EventHandler {

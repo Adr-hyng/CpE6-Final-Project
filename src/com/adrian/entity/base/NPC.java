@@ -3,8 +3,8 @@ package com.adrian.entity.base;
 import java.awt.Rectangle;
 import java.util.Random;
 
+import com.adrian.base.GameState;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.Sound;
 
 public class NPC extends Entity{

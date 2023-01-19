@@ -1,8 +1,8 @@
 package com.adrian.items;
 
+import com.adrian.base.GameState;
 import com.adrian.items.base.Item;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.Sound;
 
 public class Key extends Item {

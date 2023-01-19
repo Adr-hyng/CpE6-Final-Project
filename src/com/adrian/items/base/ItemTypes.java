@@ -1,5 +1,6 @@
 package com.adrian.items.base;
 
+import com.adrian.items.BronzeCoin;
 import com.adrian.items.equipments.*;
 import com.adrian.user_interfaces.GamePanel;
 
@@ -46,8 +47,11 @@ public interface ItemTypes{
 	}
 	
 	interface NotObtainable{
-		enum Coin{
-			BronzeCoin();
+		abstract class Coin extends Items{
+			public static Item getBronzeCoin(GamePanel gp) {
+				item = new BronzeCoin(gp);
+				return item;
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package com.adrian.utils;
+package com.adrian.entity.base;
 
 
 public interface CharacterClass {

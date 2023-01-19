@@ -1,11 +1,8 @@
 package com.adrian.utils;
 
 import java.awt.Graphics2D;
-import java.time.Clock;
 
 import com.adrian.entity.base.NPC;
-import com.adrian.entity.base.Particle;
-import com.adrian.entity.base.Projectile;
 import com.adrian.entity.monsters.GreenSlime;
 import com.adrian.items.Boots;
 import com.adrian.items.BronzeCoin;
@@ -153,6 +150,12 @@ public class AssetSetter {
 	}
 	
 	public void draw(Graphics2D g) {
+		for(int i = 0; i < gp.interactableTiles.length; i++) {
+			if(gp.interactableTiles[i] != null) {
+				gp.interactableTiles[i].draw(g);
+			}
+		}
+		
 		for(int i = 0; i < gp.itemObjects.length; i++) {
 			if(gp.itemObjects[i] != null) {
 				gp.itemObjects[i].draw(g);
@@ -160,12 +163,6 @@ public class AssetSetter {
 		}
 		
 		for(int i = 0; i < gp.entityList.size(); i++) {
-			if(gp.entityList.get(i) instanceof Projectile) {
-				gp.entityList.get(i).update();
-			}
-			if(gp.entityList.get(i) instanceof Particle) {
-				gp.entityList.get(i).update();
-			}
 			if(gp.entityList.get(i).isAlive) {
 				gp.entityList.get(i).draw(g);
 			}
@@ -174,11 +171,6 @@ public class AssetSetter {
 	}
 	
 	public void update() {
-//		System.out.println("NPC: " + gp.npcs.toString());
-//		System.out.println("Monster: " + gp.monsters.toString());
-//		System.out.println("Interactable: " + gp.interactableTiles.toString());
-//		System.out.println("Projectile: " + gp.projectileList);
-//		System.out.println("Particle: " + gp.particleList);
 		for(int i = 0; i < gp.npcs.length; i++) {
 			if(gp.npcs[i] != null) {
 				gp.npcs[i].update();

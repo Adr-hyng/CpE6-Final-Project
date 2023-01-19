@@ -24,10 +24,6 @@ public enum Sound{
 	CURSOR("sounds\\\\cursor"),
 	CUT("sounds\\\\cuttree"),
 	MAGIC("sounds\\\\burning");
-	static {
-		
-	}
-	
 	
 	private Clip clip;
 	private URL soundURL;
@@ -52,7 +48,7 @@ public enum Sound{
 	}
 	
 	public void stop() {
-		clip.stop();
+		this.clip.stop();
 	}
 	
 	public void playSE() {

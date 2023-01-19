@@ -10,10 +10,12 @@ import javax.swing.JFrame;
 import com.adrian.user_interfaces.GamePanel;
 
 // Here's the Google Drive Link for the AssetS: https://drive.google.com/drive/folders/1mtz-dJuiuUXyb-aalhCXdpJPTCj-IjYM
+// Current Chapter: https://youtu.be/1O8tFKtZYTM?list=PL_QPQmz5C6WUF-pOQDsbsKbaBZqXj4qSq&t=231
 
 public class Main {
 	
-	private static JFrame window = new JFrame();
+	
+	public static JFrame window = new JFrame();
 	
 	public static void main(String[] args) {
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -22,6 +24,7 @@ public class Main {
 		window.setResizable(false);
 		window.setAlwaysOnTop(true);
 		window.setTitle("CpE6 Final Project");
+//		window.setUndecorated(true);
 		
 		GamePanel gamePanel = new GamePanel();
 		window.setBounds(new Rectangle(gamePanel.getPreferredSize()));
@@ -39,6 +42,9 @@ public class Main {
 		
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
+		
+//		gamePanel.worldSetup();
+		gamePanel.initializeScreen(false);
 		
 		gamePanel.startGameThread();
 	}

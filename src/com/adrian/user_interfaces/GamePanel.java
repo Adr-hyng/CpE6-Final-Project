@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,6 +14,8 @@ import java.util.Comparator;
 
 import javax.swing.JPanel;
 
+import com.adrian.base.GameState;
+import com.adrian.base.Main;
 import com.adrian.collisions.CollisionHandler;
 import com.adrian.database.DatabaseManager;
 import com.adrian.entity.base.Entity;
@@ -43,10 +47,10 @@ public class GamePanel extends JPanel implements Runnable {
 	public final int screenHeight = tileSize * maxScreenRow;
 	
 	// FULL SCREEN
-//	int fullScreenWidth = screenWidth;
-//	int fullScreenHeight = screenHeight;
-//	BufferedImage tempScreen;
-//	Graphics2D g2;
+	int fullScreenWidth = screenWidth;
+	int fullScreenHeight = screenHeight;
+	BufferedImage tempScreen;
+	Graphics2D g2;
 	
 	
 	// World Settings
@@ -204,6 +208,13 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	// <---- END OF DATABASE CONNECTION ---->
 	
+	public void initializeScreen(boolean isFullScreen) {
+		// FULL SCREEN
+		this.tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
+		g2 = (Graphics2D) tempScreen.getGraphics(); 
+		if(isFullScreen) this.setFullScreen();
+	}
+	
 	public void worldSetup() {
 		try {
 			this.connectDB();
@@ -220,9 +231,6 @@ public class GamePanel extends JPanel implements Runnable {
 		assetHandler.setInteractableTiles();
 		gameState = GameState.Menu.state;
 		
-		// FULL SCREEN
-//		this.tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
-//		g2 = (Graphics2D) tempScreen.getGraphics();
 		
 	}
 	
@@ -249,7 +257,8 @@ public class GamePanel extends JPanel implements Runnable {
 			
 			if(deltaTime >= 1) {
 				update();
-				repaint();
+				drawFullScreen();
+				showScreen();
 				deltaTime--;
 			}
 			
@@ -276,24 +285,22 @@ public class GamePanel extends JPanel implements Runnable {
 		}
 	}
 	
-	public void paintComponent(Graphics g) { 
-		super.paintComponent(g);
+	public void setFullScreen() {
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice gd = ge.getDefaultScreenDevice();
+		gd.setFullScreenWindow(Main.window);
 		
-		Graphics2D g2 = (Graphics2D) g;
-		
+		this.fullScreenWidth = Main.window.getWidth();
+		this.fullScreenHeight = Main.window.getHeight();
+	}
+	
+	public void drawFullScreen() {
 		if(gameState == GameState.Menu.state) {
 			ui.draw(g2);
 		}
 		
 		else {
 			tileManager.draw(g2);
-			
-			for(int i = 0; i < interactableTiles.length; i++) {
-				if(interactableTiles[i] != null) {
-					interactableTiles[i].draw(g2);
-				}
-			}
-			
 			// Objects / NPC / Player
 			entityList.add(player);
 			assetHandler.compressEntities();
@@ -305,14 +312,16 @@ public class GamePanel extends JPanel implements Runnable {
 					return result;
 				}
 			});
-			
 			assetHandler.draw(g2);
 			assetHandler.clearEntities();
-			
-			// UI
 			ui.draw(g2);
 			
 		}
-		g2.dispose();
+	}
+	
+	public void showScreen() {
+		Graphics g = this.getGraphics();
+		g.drawImage(tempScreen, 0, 0, fullScreenWidth, fullScreenHeight, null);
+		g.dispose();
 	}
 }

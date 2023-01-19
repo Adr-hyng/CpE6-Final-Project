@@ -1,8 +1,8 @@
 package com.adrian.items.equipments;
 
+import com.adrian.base.GameState;
 import com.adrian.items.base.Shield;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.Sound;
 
 public class BlueShield extends Shield{

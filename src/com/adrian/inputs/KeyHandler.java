@@ -5,9 +5,9 @@ import java.awt.event.KeyListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.adrian.base.GameState;
 import com.adrian.base.Global;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.Sound;
 
 public class KeyHandler implements KeyListener{
@@ -30,9 +30,6 @@ public class KeyHandler implements KeyListener{
 	}
 	
 	@Override
-	public void keyTyped(KeyEvent e) {}
-
-	@Override
 	public void keyPressed(KeyEvent e) {
 		int code = e.getKeyCode();
 		
@@ -53,7 +50,21 @@ public class KeyHandler implements KeyListener{
 		}
 		
 		else if (gp.gameState == GameState.ShowStat.state) {
-			StatsState(code);
+			statstate(code);
+		}
+		
+		else if (gp.gameState == GameState.ShowOption.state) {
+			optionState(code);
+		}
+	}
+	
+	private void optionState(int code) {
+		if(code == KeyEvent.VK_ESCAPE) {
+			gp.gameState = GameState.Continue.state;
+		}
+		
+		if(code == KeyEvent.VK_ENTER) {
+			haveKeyPressed.replace("ENTER", true);
 		}
 	}
 	
@@ -139,6 +150,10 @@ public class KeyHandler implements KeyListener{
 			if(code == KeyEvent.VK_F && !gp.player.isMoving) {
 				haveKeyPressed.replace("F", true);
 			}
+			
+			if(code == KeyEvent.VK_ESCAPE) {
+				gp.gameState = GameState.ShowOption.state;
+			}
 		}
 		
 		if(code == KeyEvent.VK_C) {
@@ -167,7 +182,7 @@ public class KeyHandler implements KeyListener{
 		}
 	}
 	
-	private void StatsState(int code) {
+	private void statstate(int code) {
 		if (code == KeyEvent.VK_C) {
 			gp.gameState = GameState.Continue.state;
 		}
@@ -231,5 +246,11 @@ public class KeyHandler implements KeyListener{
 		if(code == KeyEvent.VK_ESCAPE) {
 			haveKeyPressed.replace("ESC", false);
 		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }

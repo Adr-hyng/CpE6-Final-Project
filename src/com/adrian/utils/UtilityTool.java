@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.adrian.entity.base.CharacterClass;
+
 public class UtilityTool {
 	public Sound Sound;
 	

@@ -1,9 +1,9 @@
 package com.adrian.items;
 
+import com.adrian.base.GameState;
 import com.adrian.entity.base.Entity;
 import com.adrian.items.base.Consumable;
 import com.adrian.user_interfaces.GamePanel;
-import com.adrian.user_interfaces.GameState;
 import com.adrian.utils.Sound;
 
 public class RedPotion extends Consumable {
