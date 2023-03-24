@@ -198,9 +198,7 @@ public class Player extends Entity {
 	
 	private void gameOver() {
 		if(this.currentLife <= 0 && gp.gameState == GameState.Continue.state) {
-			Sound.INTRO.stop();
-			gp.gameState = GameState.Menu.state;
-			gp.ui.titleScreenState = 0;
+			gp.reset();
 			gp.ui.titleScreen = "Game Over";
 			Sound.GAMEOVER.playSE();
 			gp.canPlay = false;
@@ -335,13 +333,11 @@ public class Player extends Entity {
 					Key key = new Key(this.gp);
 					if(this.inventory.hasItem(key)) {
 						Sound.UNLOCK.playSE();
-//						gp.playSoundEffect(3);
 						entity.setDialogue("Unlocked the door.");
 						entities[index] = null;
 						gp.player.inventory.popItem(key);
 					} else {
 						Sound.SPEAK.playSE();
-//						gp.playSoundEffect(6);
 						entity.setDialogue("Locked Door. You need 1 key\nto open this door.");
 					}
 					entity.trigger();

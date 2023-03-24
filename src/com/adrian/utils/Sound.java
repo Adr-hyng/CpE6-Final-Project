@@ -7,29 +7,37 @@ import java.net.URL;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 
 import com.adrian.base.Global;
 
 public enum Sound{
-	INTRO("sounds\\BlueBoyAdventure"),
-	COIN("sounds\\coin"),
-	POWERUP("sounds\\\\powerup"),
-	UNLOCK("sounds\\\\unlock"),
-	HIT("sounds\\\\hitmonster"),
-	PLAYER_HURT("sounds\\\\receivedamage"),
-	SPEAK("sounds\\\\speak"),
-	LEVELUP("sounds\\\\levelup"),
-	GAMEOVER("sounds\\\\gameover"),
-	ACHIEVE("sounds\\\\obtained_item"),
-	CURSOR("sounds\\\\cursor"),
-	CUT("sounds\\\\cuttree"),
-	MAGIC("sounds\\\\burning");
+	INTRO("sounds\\BlueBoyAdventure", false),
+	GAMEOVER("sounds\\\\gameover", false),
+	COIN("sounds\\coin", true),
+	POWERUP("sounds\\\\powerup", true),
+	UNLOCK("sounds\\\\unlock", true),
+	HIT("sounds\\\\hitmonster", true),
+	PLAYER_HURT("sounds\\\\receivedamage", true),
+	SPEAK("sounds\\\\speak", true),
+	LEVELUP("sounds\\\\levelup", true),
+	ACHIEVE("sounds\\\\obtained_item", true),
+	CURSOR("sounds\\\\cursor", true),
+	CUT("sounds\\\\cuttree", true),
+	MAGIC("sounds\\\\burning", true);
 	
-	private Clip clip;
+	public Clip clip;
 	private URL soundURL;
 	
-	Sound(String path) {
+	public boolean isSFX;
+	
+	public FloatControl musicVolume = null;
+	public int volumeScale = 3;
+	private float volume;
+	
+	Sound(String path, boolean isSFX) {
 		try {
+			this.isSFX = isSFX;
 			soundURL = new File(Global.assets + path + ".wav").toURI().toURL();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
@@ -39,12 +47,15 @@ public enum Sound{
 	private void startPlay() {
 		try {
 			AudioInputStream audioInput = AudioSystem.getAudioInputStream(soundURL);
-			clip = AudioSystem.getClip();
-			clip.open(audioInput);
+			this.clip = AudioSystem.getClip();
+			this.clip.open(audioInput);
+			musicVolume = (FloatControl)this.clip.getControl(FloatControl.Type.MASTER_GAIN);
+			updateVolume();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		clip.start();
+		
+		this.clip.start();
 	}
 	
 	public void stop() {
@@ -56,6 +67,18 @@ public enum Sound{
 	}
 	public void play() {
 		this.startPlay();
-		clip.loop(Clip.LOOP_CONTINUOUSLY);
+		this.clip.loop(Clip.LOOP_CONTINUOUSLY);
+	}
+	
+	public void updateVolume() {
+		switch (volumeScale) {
+		case 0: volume = -80f ; break;
+		case 1: volume = -20f ; break;
+		case 2: volume = -12f ; break;
+		case 3: volume = -5f ; break;
+		case 4: volume = 1f ; break;
+		case 5: volume = 6f ; break;
+		}
+		if(musicVolume != null) musicVolume.setValue(volume);
 	}
 }

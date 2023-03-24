@@ -9,8 +9,10 @@ import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import javax.swing.JPanel;
 
@@ -51,6 +53,7 @@ public class GamePanel extends JPanel implements Runnable {
 	int fullScreenHeight = screenHeight;
 	BufferedImage tempScreen;
 	Graphics2D g2;
+	public boolean isFullScreen = false;
 	
 	
 	// World Settings
@@ -112,6 +115,10 @@ public class GamePanel extends JPanel implements Runnable {
 	public Player player = new Player(this, keyInput, new Vector2DUtil(respawnX, respawnY), "");	
 	public ArrayList<Projectile> projectileList = new ArrayList<>();
 	
+	// Sounds
+	public final ArrayList<Sound> music = new ArrayList<>(Arrays.asList(Sound.values()).stream().filter(sound -> !sound.isSFX).collect(Collectors.toList()));
+	public final ArrayList<Sound> soundEffects = new ArrayList<>(Arrays.asList(Sound.values()).stream().filter(sound -> sound.isSFX).collect(Collectors.toList()));
+	
 	public int gameState;
 	public boolean canPlay = true;
 	
@@ -161,6 +168,7 @@ public class GamePanel extends JPanel implements Runnable {
 	public void newGame(Entity entity, int index, String selectedClass) {
 		// Reset
 		Sound.INTRO.play();
+		this.ui.selectionY = 0;
 		this.selectedClass = selectedClass;
 		worldSetup();
 		try {
@@ -208,7 +216,7 @@ public class GamePanel extends JPanel implements Runnable {
 	
 	// <---- END OF DATABASE CONNECTION ---->
 	
-	public void initializeScreen(boolean isFullScreen) {
+	public void initializeScreen() {
 		// FULL SCREEN
 		this.tempScreen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_ARGB);
 		g2 = (Graphics2D) tempScreen.getGraphics(); 
@@ -323,5 +331,11 @@ public class GamePanel extends JPanel implements Runnable {
 		Graphics g = this.getGraphics();
 		g.drawImage(tempScreen, 0, 0, fullScreenWidth, fullScreenHeight, null);
 		g.dispose();
+	}
+	
+	public void reset() {
+		Arrays.stream(Sound.values()).filter(s -> s.clip != null).forEach(s -> {s.stop(); s.volumeScale = 3; });
+		gameState = GameState.Menu.state;
+		ui.titleScreenState = 0;
 	}
 }

@@ -43,8 +43,7 @@ public class Main {
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
 		
-//		gamePanel.worldSetup();
-		gamePanel.initializeScreen(false);
+		gamePanel.initializeScreen();
 		
 		gamePanel.startGameThread();
 	}

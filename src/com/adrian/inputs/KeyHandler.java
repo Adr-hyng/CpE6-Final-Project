@@ -61,20 +61,80 @@ public class KeyHandler implements KeyListener{
 	private void optionState(int code) {
 		if(code == KeyEvent.VK_ESCAPE) {
 			gp.gameState = GameState.Continue.state;
+			gp.ui.selectionY = 0;
+			gp.ui.subState = 0;
 		}
 		
 		if(code == KeyEvent.VK_ENTER) {
 			haveKeyPressed.replace("ENTER", true);
+		}
+		
+		int maxSelectionY = 0;
+		switch(gp.ui.subState) {
+		case 0: maxSelectionY = 5; break;
+		case 3: maxSelectionY = 1; break;
+		}
+		
+		if(code == KeyEvent.VK_W) {
+			Sound.CURSOR.playSE();
+			gp.ui.selectionY = (gp.ui.selectionY < 1) ? maxSelectionY : gp.ui.selectionY - 1;
+		}
+		
+		if(code == KeyEvent.VK_S) {
+			Sound.CURSOR.playSE();
+			gp.ui.selectionY = (gp.ui.selectionY > maxSelectionY - 1) ? 0 : gp.ui.selectionY + 1;
+		}
+		
+		if(code == KeyEvent.VK_A) {
+			if(gp.ui.subState == 0) {
+				Sound.CURSOR.playSE();
+				if(gp.ui.selectionY == 0) return;
+				// Use Built-in map and collections #REFACTOR
+				else if(gp.ui.selectionY == 1) {
+					for(Sound s: gp.music) {
+						if(!(s.volumeScale > 0)) break;
+						s.volumeScale--;
+						s.updateVolume();
+					}
+				}
+				else if(gp.ui.selectionY == 2) {
+					for(Sound s: gp.soundEffects) {
+						if(!(s.volumeScale > 0)) break;
+						s.volumeScale--;
+					}
+				}
+			}
+		}
+		
+		if(code == KeyEvent.VK_D) {
+			if(gp.ui.subState == 0) {
+				Sound.CURSOR.playSE();
+				if(gp.ui.selectionY == 0) return;
+				// Use Built-in map and collections #REFACTOR
+				else if(gp.ui.selectionY == 1) {
+					for(Sound s: gp.music) {
+						if(!(s.volumeScale < 5)) break;
+						s.volumeScale++;
+						s.updateVolume();
+					}
+				}
+				else if(gp.ui.selectionY == 2) {
+					for(Sound s: gp.soundEffects) {
+						if(!(s.volumeScale < 5)) break;
+						s.volumeScale++;
+					}
+				}
+			}
 		}
 	}
 	
 	private void menuState(int code) {
 		if(gp.ui.titleScreenState == 0) {
 			if(code == KeyEvent.VK_W) {
-				if(gp.ui.selectionY > 0) gp.ui. selectionY--;
+				if(gp.ui.selectionY > 0) gp.ui. selectionY--; Sound.CURSOR.playSE();;
 			}
 			if(code == KeyEvent.VK_S) {
-				if(gp.ui.selectionY < gp.ui.menuOption.size() - 1) gp.ui.selectionY++;
+				if(gp.ui.selectionY < gp.ui.menuOption.size() - 1) gp.ui.selectionY++; Sound.CURSOR.playSE();;
 			}
 			
 			if(code == KeyEvent.VK_ENTER) {
@@ -103,10 +163,12 @@ public class KeyHandler implements KeyListener{
 		
 		else if (gp.ui.titleScreenState == 1) {
 			if(code == KeyEvent.VK_W) {
+				Sound.CURSOR.playSE();
 				if(gp.ui.selectionY > 0) gp.ui.selectionY--;
 				if(gp.ui.selectionY >= gp.ui.classOption.size() - 1) gp.ui.selectionY--;
 			}
 			if(code == KeyEvent.VK_S) {
+				Sound.CURSOR.playSE();
 				if(gp.ui.selectionY < gp.ui.classOption.size() - 2) gp.ui.selectionY++;
 				else if(gp.ui.selectionY == gp.ui.classOption.size() - 2) gp.ui.selectionY = gp.ui.classOption.size();
 			}
