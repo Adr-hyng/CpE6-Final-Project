@@ -1,8 +1,10 @@
 package com.adrian.items.equipments;
 
+import com.adrian.base.GameState;
 import com.adrian.items.base.ItemTypes;
 import com.adrian.items.base.Weapon;
 import com.adrian.user_interfaces.GamePanel;
+import com.adrian.utils.Sound;
 
 public class CommonSword extends Weapon{
 	public CommonSword(GamePanel gp) {
@@ -19,5 +21,11 @@ public class CommonSword extends Weapon{
 	@Override
 	protected void getSprite() {
 		this.image = this.loadSprite("objects\\sword_normal.png");
+	}
+	
+	public void setDialogue (String text) {
+		gp.ui.currentDialogue = text;
+		Sound.ACHIEVE.playSE();
+		gp.gameState = GameState.Dialogue.state;
 	}
 }

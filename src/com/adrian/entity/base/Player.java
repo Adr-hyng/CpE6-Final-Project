@@ -262,65 +262,18 @@ public class Player extends Entity {
 			gp.ui.addMessage("Coin +" + coinValue);
 			Sound.COIN.playSE();
 			gp.itemObjects[index] = null;
+		} else {
+			text = "You obtained a " + obtainedItem.name + "!";
+			if(this.inventory.isFull()) {
+				text = "Bag is full.";
+				obtainedItem.setDialogue(text);
+			} else {
+				obtainedItem.setDialogue(text);
+				this.inventory.addItem(obtainedItem);
+			}
+			gp.itemObjects[index] = null;
 		}
-		
-		switch(obtainedItem.name) {
-		case "Red Potion":
-			text = "You obtained a " + obtainedItem.name + "!";
-			if(this.inventory.isFull()) {
-				text = "Bag is full.";
-				obtainedItem.setDialogue(text);
-			} else {
-				obtainedItem.setDialogue(text);
-				this.inventory.addItem(obtainedItem);
-			}
-			gp.itemObjects[index] = null;
-			break;
-		case "Key":
-			text = "You obtained a " + obtainedItem.name + "!";
-			if(this.inventory.isFull()) {
-				text = "Bag is full.";
-				obtainedItem.setDialogue(text);
-			} else {
-				obtainedItem.setDialogue(text);
-				this.inventory.addItem(obtainedItem);
-			}
-			gp.itemObjects[index] = null;
-			break;
-		case "Boots":
-			text = "You obtained a " + obtainedItem.name + "!";
-			if(this.inventory.isFull()) {
-				text = "Bag is full.";
-				obtainedItem.setDialogue(text);
-			} else {
-				obtainedItem.setDialogue(text);
-				this.inventory.addItem(obtainedItem);
-			}
-			gp.itemObjects[index] = null;
-			break;
-		case "Old Axe":
-			text = "You obtained a " + obtainedItem.name + "!";
-			if(this.inventory.isFull()) {
-				text = "Bag is full.";
-				obtainedItem.setDialogue(text);
-			} else {
-				obtainedItem.setDialogue(text);
-				this.inventory.addItem(obtainedItem);
-			}
-			gp.itemObjects[index] = null;
-			break;
-		case "Blue Shield":
-			text = "You obtained a " + obtainedItem.name + "!";
-			if(this.inventory.isFull()) {
-				text = "Bag is full.";
-				obtainedItem.setDialogue(text);
-			} else {
-				obtainedItem.setDialogue(text);
-				this.inventory.addItem(obtainedItem);
-			}
-			gp.itemObjects[index] = null;
-			break;
-		}
+
 	}
 	
 	private void interactEntity(int index, Entity[] entities) {
